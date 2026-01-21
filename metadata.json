@@ -1,0 +1,7 @@
+{
+  "name": "Copy of MiniGoods - Shopping App",
+  "description": "A high-end e-commerce application featuring a shopping cart, categories, and personalized profiles with an AI-integrated recommendation engine.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
