@@ -6,11 +6,14 @@ export enum Screen {
   CART = 'cart',
   PROFILE = 'profile',
   ADMIN = 'admin',
-  CHECKOUT = 'checkout'
+  CHECKOUT = 'checkout',
+  PRODUCT_DETAIL = 'product_detail',
+  SUB_CATEGORY_PRODUCTS = 'sub_category_products',
+  CATEGORY_PRODUCTS = 'category_products'
 }
 
 export interface User {
-  phone: string;
+  email: string;
   name?: string;
   avatar?: string;
   joinedAt: string;
@@ -23,8 +26,10 @@ export interface Product {
   originalPrice?: number;
   image: string;
   category: string;
+  subCategory?: string;
   tag?: string;
   soldCount?: string;
+  description?: string;
 }
 
 export interface CartItem extends Product {
@@ -35,7 +40,7 @@ export interface CartItem extends Product {
 
 export interface Order {
   id: string;
-  userPhone: string;
+  userEmail: string;
   phone: string;
   address: string;
   paymentMethod: 'delivery' | 'bank';
@@ -44,9 +49,15 @@ export interface Order {
   createdAt: string;
 }
 
+export interface SubCategory {
+  id: string;
+  name: string;
+  image: string;
+  isNew?: boolean;
+}
+
 export interface Category {
   id: string;
   name: string;
-  image?: string;
-  isNew?: boolean;
+  subCategories: SubCategory[];
 }

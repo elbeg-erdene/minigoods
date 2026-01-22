@@ -5,7 +5,8 @@ import { CartItem, Order } from '../types';
 interface CheckoutScreenProps {
   items: CartItem[];
   totalAmount: number;
-  onConfirm: (order: Omit<Order, 'id' | 'createdAt' | 'userPhone'>) => void;
+  // Fix: Changed 'userPhone' to 'userEmail' in the Omit list to correctly reflect that the Checkout screen doesn't provide userEmail.
+  onConfirm: (order: Omit<Order, 'id' | 'createdAt' | 'userEmail'>) => void;
   onBack: () => void;
 }
 

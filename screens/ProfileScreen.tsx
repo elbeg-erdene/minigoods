@@ -10,59 +10,54 @@ interface ProfileScreenProps {
 }
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, userOrders, onNavigate, onLogout }) => {
+  const isAdmin = user?.email === 'elbegeehurlee@gmail.com';
+
   return (
     <div className="min-h-screen bg-white dark:bg-[#1a0f0c] animate-in fade-in duration-500">
-      {/* Header with Back Button */}
       <div className="flex items-center justify-between px-4 py-4 sticky top-0 bg-white/80 dark:bg-[#1a0f0c]/80 backdrop-blur-md z-10">
         <div className="flex items-center gap-2">
           <button 
             onClick={() => onNavigate(Screen.HOME)}
             className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors flex items-center justify-center"
-            aria-label="Back to Home"
           >
             <span className="material-symbols-outlined text-2xl">arrow_back</span>
           </button>
           <h2 className="text-xl font-bold leading-tight tracking-tight">Профайл</h2>
         </div>
         <div className="flex gap-2">
-          <button 
-            onClick={() => onNavigate(Screen.ADMIN)}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-          >
-            <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
-          </button>
+          {isAdmin && (
+            <button 
+              onClick={() => onNavigate(Screen.ADMIN)}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors bg-primary/10 text-primary"
+            >
+              <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
+            </button>
+          )}
           <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
             <span className="material-symbols-outlined text-2xl">settings</span>
           </button>
         </div>
       </div>
 
-      {/* User Header */}
       <div className="px-6 py-8 flex items-center gap-5">
         <div className="relative group cursor-pointer">
           <div className="w-24 h-24 rounded-full border-4 border-primary p-1 bg-white dark:bg-[#1a0f0c] shadow-xl">
-            <div 
-              className="w-full h-full rounded-full bg-primary/20 flex items-center justify-center"
-            >
+            <div className="w-full h-full rounded-full bg-primary/20 flex items-center justify-center">
                <span className="material-symbols-outlined text-4xl text-primary">person</span>
             </div>
           </div>
           <div className="absolute -bottom-1 -right-1 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full border-2 border-white dark:border-[#1a0f0c] shadow-lg">
-            USER
+            {isAdmin ? 'ADMIN' : 'USER'}
           </div>
         </div>
         <div className="flex flex-col">
-          <h1 className="text-xl font-bold tracking-tight truncate max-w-[200px]">{user?.phone || 'Хэрэглэгч'}</h1>
+          <h1 className="text-lg font-bold tracking-tight truncate max-w-[200px]">{user?.email || 'Хэрэглэгч'}</h1>
           <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium mt-1">
             Гишүүн болсон: {user?.joinedAt.split(',')[0]}
           </p>
-          <div className="flex gap-2 mt-2">
-            <span className="text-[9px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold border border-primary/20">Баталгаажсан</span>
-          </div>
         </div>
       </div>
 
-      {/* Order History Section */}
       <div className="mx-4 mt-4 mb-8">
         <div className="flex justify-between items-center mb-6 px-2">
           <h3 className="text-lg font-bold">Миний захиалгын түүх</h3>

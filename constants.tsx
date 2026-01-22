@@ -1,5 +1,5 @@
 
-import { Product, Category } from './types';
+import { Product, Category, SubCategory } from './types';
 
 export const PRODUCTS: Product[] = [
   {
@@ -64,21 +64,8 @@ export const PRODUCTS: Product[] = [
   }
 ];
 
-export const CATEGORIES: Category[] = [
-  { id: '1', name: 'Шинэ бараа' },
-  { id: '2', name: 'Хувцас хэрэглэл' },
-  { id: '3', name: 'Цахилгаан бараа' },
-  { id: '4', name: 'Гэр ахуйн бараа' },
-  { id: '5', name: 'Гоо сайхан' },
-  { id: '6', name: 'Ариун цэврийн хэрэгсэл' },
-  { id: '7', name: 'Хүүхдийн хэсэг' },
-  { id: '8', name: 'Хоол хүнс' },
-  { id: '9', name: 'Төхөөрөмж' },
-  { id: '10', name: 'Барилга' },
-  { id: '11', name: 'Амралт, спорт' }
-];
-
-export const SUB_CATEGORIES: Record<string, Category[]> = {
+// Fix: Corrected type definition to SubCategory[] so the 'image' property is recognized, resolving lines 83-93 errors.
+export const SUB_CATEGORIES: Record<string, SubCategory[]> = {
   '1': [
     { id: 's1', name: 'Даашинз', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDaEj7ImvQH_5yWJiAtNkUNT_mMjmNq4zzp11tsu866x66liypZ0qygobYLGI2LAT0Zccs7gt2BCRJX6JvCqBYOjtM65IqDgU_SEU7BG9NnY0VZ0ouMPDy5PDMt9Mm-X4OJZUYqQ68-4_pB5DFroCMgVX7FiQrxaj8Tq5NxK8-4lMEXhOQ0gCCPdtt6Ejf-Eb7Dw0rAUgh6d6NIoW52pWR3rtzoBfMVG-hQnfoi_F1lJDDN3NxcVI2njWyAQl_2X4PUBvDY6WFHbtwT' },
     { id: 's2', name: 'Жинс', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAzguIBicYGq3tkngM-WDG7_-haux3D7af3HWPoiZzfEfcte8R7dX0iHG6lhr-ReHQXWv99tIEC4A0tGSvOuiVG1pDHpmNUSKEERTqyI0zkHMUilYgQ5zCq7A8RCWAspApfP-8RoMyfzRZVfG6FZsHvChbc7QHM54wVa_pn2xkk0ZjjXPFaoo6Y4jFn5vaTI8GizZ-YNMQROkW30IacNEfar9FMLIwtFYYcyFQ4wO6143VVGbGxYQPuNmnd9CeOTYHssLncbaCOcUl_' },
@@ -93,3 +80,18 @@ export const SUB_CATEGORIES: Record<string, Category[]> = {
     { id: 's11', name: 'Ороолт', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC4poGCfvrti178XAu6dbvu2l9pGxKxVQJ8KddIjdpT3g2tZuX3Fm3hmYkUcvIMChdyVdr26nESbSC403ZYwXlBc15fG0p-8MhKSIZHPPdbDLEMclkbz-J9pJNKpwMkPJETZ3tuqlvnGMjx7_Cw-78Xd02eYVM1v4pOQJrP3hKoCjQev2qD7cCkJQ3jdfEA3F7IIjmzA_u4UAsG0JPkdslz0Fl5vJQo1grZsHl6DrapMRmjNXwj1nrV2H34BLaN7SIhriTHPxE3TV-B' },
   ]
 };
+
+// Fix: Added the required 'subCategories' property to all Category items to satisfy the interface, resolving lines 68-78 errors.
+export const CATEGORIES: Category[] = [
+  { id: '1', name: 'Шинэ бараа', subCategories: SUB_CATEGORIES['1'] || [] },
+  { id: '2', name: 'Хувцас хэрэглэл', subCategories: [] },
+  { id: '3', name: 'Цахилгаан бараа', subCategories: [] },
+  { id: '4', name: 'Гэр ахуйн бараа', subCategories: [] },
+  { id: '5', name: 'Гоо сайхан', subCategories: [] },
+  { id: '6', name: 'Ариун цэврийн хэрэгсэл', subCategories: [] },
+  { id: '7', name: 'Хүүхдийн хэсэг', subCategories: [] },
+  { id: '8', name: 'Хоол хүнс', subCategories: [] },
+  { id: '9', name: 'Төхөөрөмж', subCategories: [] },
+  { id: '10', name: 'Барилга', subCategories: [] },
+  { id: '11', name: 'Амралт, спорт', subCategories: [] }
+];
