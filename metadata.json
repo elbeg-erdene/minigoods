@@ -1,6 +1,6 @@
 {
-  "name": "Copy of MiniGoods - Shopping App",
-  "description": "A high-end e-commerce application featuring a shopping cart, categories, and personalized profiles with an AI-integrated recommendation engine.",
+  "name": "MiniGoods - Google Sheets Powered",
+  "description": "A high-end e-commerce application powered by Google Sheets API for dynamic product management and order processing.",
   "requestFramePermissions": [
     "camera"
   ]

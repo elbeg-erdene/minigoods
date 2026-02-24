@@ -1,12 +1,11 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Screen, CartItem, Product, Order, User, Category, SubCategory } from './types';
 import { PRODUCTS, CATEGORIES } from './constants';
 import HomeScreen from './screens/HomeScreen';
 import CategoriesScreen from './screens/CategoriesScreen';
 import CartScreen from './screens/CartScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import AdminScreen from './screens/AdminScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
 import LoginScreen from './screens/LoginScreen';
 import ProductDetailScreen from './screens/ProductDetailScreen';
@@ -14,11 +13,12 @@ import SubCategoryProductsScreen from './screens/SubCategoryProductsScreen';
 import CategoryProductsScreen from './screens/CategoryProductsScreen';
 import BottomNav from './components/BottomNav';
 
+const API_URL = 'https://script.google.com/macros/s/AKfycbyApKLD9rhmVbmpZm8AKN4WGfCGccg65QRnmoj4KdHmHWNc2yVtbRHaLEKKmd6bDpkX/exec';
+
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>(Screen.LOGIN);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [registeredUsers, setRegisteredUsers] = useState<User[]>([]);
-  const [products, setProducts] = useState<Product[]>(PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>(CATEGORIES);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState<{sub: SubCategory, parent: string} | null>(null);
@@ -26,6 +26,28 @@ const App: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [toast, setToast] = useState<{ message: string; show: boolean }>({ message: '', show: false });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        const activeProducts = data.filter((p: any) => String(p.active).toLowerCase() === 'true');
+        setProducts(activeProducts);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      showToast('Бараа татахад алдаа гарлаа');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const showToast = (message: string) => {
     setToast({ message, show: true });
@@ -35,7 +57,6 @@ const App: React.FC = () => {
   const handleLogin = (email: string) => {
     const newUser: User = { email, joinedAt: new Date().toLocaleString() };
     setCurrentUser(newUser);
-    setRegisteredUsers(prev => prev.find(u => u.email === email) ? prev : [...prev, newUser]);
     setCurrentScreen(Screen.HOME);
     showToast(`${email} амжилттай нэвтэрлээ!`);
   };
@@ -116,8 +137,6 @@ const App: React.FC = () => {
         }} onBack={() => setCurrentScreen(Screen.CART)} />;
       case Screen.PROFILE:
         return <ProfileScreen user={currentUser} userOrders={orders.filter(o => o.userEmail === currentUser?.email)} onNavigate={setCurrentScreen} onLogout={() => { setCurrentUser(null); setCurrentScreen(Screen.LOGIN); }} />;
-      case Screen.ADMIN:
-        return <AdminScreen products={products} orders={orders} categories={categories} registeredUsers={registeredUsers} onUpdateProducts={setProducts} onUpdateCategories={setCategories} onBack={() => setCurrentScreen(Screen.PROFILE)} />;
       default:
         return <HomeScreen products={products} categories={categories} onAddToCart={addToCart} onProductClick={handleProductClick} onCategoryClick={handleMainCategoryClick} />;
     }
@@ -129,7 +148,7 @@ const App: React.FC = () => {
         <div className="bg-primary text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 border border-white/20 font-bold text-xs uppercase tracking-wider">{toast.message}</div>
       </div>
       <main className="flex-1 pb-20">{renderScreen()}</main>
-      {![Screen.ADMIN, Screen.CHECKOUT, Screen.LOGIN, Screen.PRODUCT_DETAIL, Screen.SUB_CATEGORY_PRODUCTS, Screen.CATEGORY_PRODUCTS].includes(currentScreen) && <BottomNav currentScreen={currentScreen} onNavigate={setCurrentScreen} cartCount={cart.reduce((acc, i) => acc + i.quantity, 0)} />}
+      {![Screen.CHECKOUT, Screen.LOGIN, Screen.PRODUCT_DETAIL, Screen.SUB_CATEGORY_PRODUCTS, Screen.CATEGORY_PRODUCTS].includes(currentScreen) && <BottomNav currentScreen={currentScreen} onNavigate={setCurrentScreen} cartCount={cart.reduce((acc, i) => acc + i.quantity, 0)} />}
     </div>
   );
 };

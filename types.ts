@@ -5,7 +5,6 @@ export enum Screen {
   CATEGORIES = 'categories',
   CART = 'cart',
   PROFILE = 'profile',
-  ADMIN = 'admin',
   CHECKOUT = 'checkout',
   PRODUCT_DETAIL = 'product_detail',
   SUB_CATEGORY_PRODUCTS = 'sub_category_products',
@@ -30,6 +29,7 @@ export interface Product {
   tag?: string;
   soldCount?: string;
   description?: string;
+  active?: string;
 }
 
 export interface CartItem extends Product {

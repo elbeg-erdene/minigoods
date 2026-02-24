@@ -10,8 +10,6 @@ interface ProfileScreenProps {
 }
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, userOrders, onNavigate, onLogout }) => {
-  const isAdmin = user?.email === 'elbegeehurlee@gmail.com';
-
   return (
     <div className="min-h-screen bg-white dark:bg-[#1a0f0c] animate-in fade-in duration-500">
       <div className="flex items-center justify-between px-4 py-4 sticky top-0 bg-white/80 dark:bg-[#1a0f0c]/80 backdrop-blur-md z-10">
@@ -25,14 +23,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, userOrders, onNavig
           <h2 className="text-xl font-bold leading-tight tracking-tight">Профайл</h2>
         </div>
         <div className="flex gap-2">
-          {isAdmin && (
-            <button 
-              onClick={() => onNavigate(Screen.ADMIN)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors bg-primary/10 text-primary"
-            >
-              <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
-            </button>
-          )}
           <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
             <span className="material-symbols-outlined text-2xl">settings</span>
           </button>
@@ -47,7 +37,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, userOrders, onNavig
             </div>
           </div>
           <div className="absolute -bottom-1 -right-1 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full border-2 border-white dark:border-[#1a0f0c] shadow-lg">
-            {isAdmin ? 'ADMIN' : 'USER'}
+            USER
           </div>
         </div>
         <div className="flex flex-col">

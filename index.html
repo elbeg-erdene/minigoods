@@ -30,6 +30,7 @@
         .animate-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         input:focus, textarea:focus, select:focus { outline: none; border-color: #39E079; ring: 0; }
+        .flex-2 { flex: 2; }
     </style>
 <script type="importmap">
 {
@@ -41,11 +42,13 @@
   }
 }
 </script>
+<link rel="stylesheet" href="/index.css">
 </head>
 <body class="bg-[#f0f2f1] dark:bg-zinc-950 text-[#1c110d] dark:text-white antialiased overflow-x-hidden">
     <div id="root" class="max-w-[430px] mx-auto min-h-screen bg-white dark:bg-zinc-900 shadow-2xl relative overflow-hidden flex flex-col">
-        <!-- JS энд контентыг тарина -->
+        <!-- JS will render content here -->
     </div>
     <script type="module" src="index.js"></script>
+<script type="module" src="/index.tsx"></script>
 </body>
 </html>

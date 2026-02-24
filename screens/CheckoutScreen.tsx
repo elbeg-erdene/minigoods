@@ -15,19 +15,48 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ items, totalAmount, onC
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone || !address) {
       alert("Мэдээллээ бүрэн оруулна уу.");
       return;
     }
-    onConfirm({
-      phone,
-      address,
-      paymentMethod,
-      items,
-      totalAmount
-    });
+
+    try {
+      const API_URL = 'https://script.google.com/macros/s/AKfycbyApKLD9rhmVbmpZm8AKN4WGfCGccg65QRnmoj4KdHmHWNc2yVtbRHaLEKKmd6bDpkX/exec';
+      
+      // Send a request for each item in the cart
+      const promises = items.map(item => {
+        const formData = new URLSearchParams();
+        formData.append('product', item.name);
+        formData.append('qty', item.quantity.toString());
+        formData.append('phone', phone);
+        formData.append('address', address);
+
+        return fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors', // Google Apps Script often requires no-cors for simple POSTs if not handled specifically
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: formData.toString()
+        });
+      });
+
+      await Promise.all(promises);
+      
+      alert("Захиалга амжилттай");
+      onConfirm({
+        phone,
+        address,
+        paymentMethod,
+        items,
+        totalAmount
+      });
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert("Захиалга илгээхэд алдаа гарлаа. Дахин оролдоно уу.");
+    }
   };
 
   return (

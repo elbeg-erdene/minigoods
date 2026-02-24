@@ -1,6 +1,9 @@
 
 import { GoogleGenAI } from "@google/genai";
 
+// --- INITIALIZE GEMINI ---
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
 // --- DATA STATE ---
 let state = {
   currentScreen: 'LOGIN', // LOGIN, HOME, CATEGORIES, SUB_CATEGORY_PRODUCTS, CATEGORY_PRODUCTS, CART, PROFILE, ADMIN, CHECKOUT, PRODUCT_DETAIL
@@ -38,10 +41,27 @@ let state = {
   selectedProductId: null,
   uploadedImages: [],
   activeCatId: '1',
-  paymentMethod: 'delivery' // delivery or bank
+  paymentMethod: 'delivery', // delivery or bank
+  aiMessage: "Танд зориулсан шилдэг сонголтууд!"
 };
 
 const ADMIN_EMAIL = 'elbegeehurlee@gmail.com';
+
+// --- GEMINI SERVICE ---
+async function updateAiMessage() {
+  if (state.cart.length === 0) return;
+  try {
+    const cartNames = state.cart.map(i => i.name).join(', ');
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: `Хэрэглэгчийн сагсанд байгаа бараанууд: ${cartNames}. Эдгээр дээр үндэслэн худалдан авалтыг дэмжсэн маш богино, 1 өгүүлбэр бүхий маркетингийн мессеж монгол хэлээр бичээрэй.`,
+    });
+    const text = response.text?.trim() || state.aiMessage;
+    setState({ aiMessage: text });
+  } catch (e) {
+    console.error("Gemini Error:", e);
+  }
+}
 
 // --- CORE UTILS ---
 function setState(update) {
@@ -68,7 +88,7 @@ async function handleFilesSelect(event, callback) {
     });
     results.push(b64);
   }
-  event.target.value = ''; // Reset input
+  event.target.value = '';
   callback(results);
 }
 window.handleFilesSelect = handleFilesSelect;
@@ -187,7 +207,7 @@ function renderProductDetail() {
           </div>
           <div class="h-px bg-gray-100"></div>
           <div class="space-y-3">
-            <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Бүтээгдэхүүний тайлбар</h2>
+            <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Бүтээгдэхүүний танилцуулга</h2>
             <p class="text-xs font-bold text-gray-600 leading-relaxed whitespace-pre-wrap">${p.description || 'Тайлбар одоогоор байхгүй байна.'}</p>
           </div>
         </div>
@@ -244,6 +264,15 @@ function renderCart() {
   return `
     <div class="flex-1 p-4 pb-48 bg-gray-50 overflow-y-auto h-full animate-in">
       <h1 class="text-2xl font-black mb-6 uppercase tracking-widest text-primary px-2 pt-4">Сагс</h1>
+      
+      <!-- AI Recommendations Bar -->
+      ${state.cart.length > 0 ? `
+        <div class="mx-2 mb-4 p-3 bg-primary/10 rounded-2xl border border-primary/20 flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary text-xl">temp_preferences_custom</span>
+          <p class="text-[10px] font-bold text-primary flex-1">${state.aiMessage}</p>
+        </div>
+      ` : ''}
+
       <div class="space-y-3">
         ${state.cart.map(item => `
           <div class="flex gap-4 p-4 bg-white rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group">
@@ -296,8 +325,6 @@ function renderProfile() {
     <div class="flex-1 overflow-y-auto pb-24 bg-gray-50 h-full animate-in">
       <header class="p-8 bg-primary rounded-b-[40px] text-white flex items-center gap-5 shadow-xl relative overflow-hidden">
         <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-        
-        <!-- Profile Pic -->
         <div class="relative group cursor-pointer" onclick="document.getElementById('profile-pic-upload').click()">
           <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center border-4 border-white/50 overflow-hidden shadow-lg">
             ${avatar ? `<img src="${avatar}" class="w-full h-full object-cover">` : `<span class="material-symbols-outlined text-4xl filled-icon">person</span>`}
@@ -307,16 +334,13 @@ function renderProfile() {
           </div>
           <input id="profile-pic-upload" type="file" accept="image/*" class="hidden" onchange="window.handleFilesSelect(event, (imgs) => window.handleProfilePicChange(imgs[0]))">
         </div>
-
         <div class="z-10 overflow-hidden flex-1">
           <h2 class="text-sm font-black truncate uppercase leading-tight">${state.currentUser?.email}</h2>
           <p class="text-[8px] font-bold text-white/70 uppercase tracking-widest mt-1">${isAdmin ? 'Администратор' : 'Хүндэт Хэрэглэгч'}</p>
         </div>
       </header>
-      
       <div class="p-6 space-y-6">
         ${isAdmin ? `<button onclick="window.setState({currentScreen: 'ADMIN'})" class="w-full py-4 bg-white border-2 border-primary/20 text-primary rounded-2xl font-black text-[10px] uppercase flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform">Админ Удирдлага <span class="material-symbols-outlined text-sm">settings</span></button>` : ''}
-        
         <div class="grid grid-cols-2 gap-4">
            <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm flex flex-col items-center">
              <span class="text-xl font-black text-primary">${userOrders.length}</span>
@@ -327,7 +351,6 @@ function renderProfile() {
              <span class="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1">Сагсанд байгаа</span>
            </div>
         </div>
-
         <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Захиалгын түүх</h3>
         ${userOrders.length > 0 ? userOrders.slice().reverse().map(o => `
           <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm animate-in zoom-in-95">
@@ -338,21 +361,13 @@ function renderProfile() {
               </div>
               <span class="text-xs font-black text-primary">${o.totalAmount.toLocaleString()}₮</span>
             </div>
-            <div class="flex gap-1 overflow-x-auto no-scrollbar">
-              ${o.items.map(item => `
-                <div class="w-8 h-8 rounded-lg overflow-hidden border border-gray-50 flex-shrink-0">
-                  <img src="${item.image}" class="w-full h-full object-cover">
-                </div>
-              `).join('')}
-            </div>
           </div>
         `).join('') : `
           <div class="text-center py-16 opacity-30 bg-white rounded-[40px] border border-dashed border-gray-200">
             <span class="material-symbols-outlined text-5xl">receipt_long</span>
-            <p class="text-[9px] font-black uppercase mt-2">Одоогоор захиалга байхгүй байна</p>
+            <p class="text-[9px] font-black uppercase mt-2">Түүх байхгүй</p>
           </div>
         `}
-        
         <button onclick="window.handleLogoutAction()" class="w-full py-4 text-red-500 text-[10px] font-black border-2 border-red-50 rounded-2xl mt-8 uppercase tracking-widest active:scale-95 transition-all">Гарах</button>
       </div>
     </div>
@@ -370,9 +385,8 @@ function renderCheckout() {
         <button onclick="window.setState({currentScreen: 'CART'})" class="p-2 bg-white rounded-full shadow-sm"><span class="material-symbols-outlined text-gray-600">arrow_back</span></button>
         <h1 class="text-lg font-black uppercase tracking-widest text-gray-800">Төлбөр</h1>
       </header>
-      
       <div class="space-y-4">
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 animate-in slide-in-from-bottom-2">
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
           <h2 class="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-widest">Төлбөрийн хэлбэр</h2>
           <div class="space-y-2">
             <button onclick="window.setState({paymentMethod: 'delivery'})" class="w-full p-4 rounded-2xl border-2 flex items-center justify-between transition-all ${method === 'delivery' ? 'border-primary bg-primary/5 text-primary' : 'border-gray-50 text-gray-400'}">
@@ -385,33 +399,21 @@ function renderCheckout() {
             </button>
           </div>
           ${method === 'bank' ? `
-            <div class="mt-4 p-5 bg-primary/5 rounded-2xl border border-primary/10 animate-in zoom-in-95">
-              <div class="flex items-center gap-3 mb-2">
-                <span class="material-symbols-outlined text-primary">account_balance</span>
-                <p class="text-[11px] font-black text-primary uppercase">Банкны мэдээлэл</p>
-              </div>
+            <div class="mt-4 p-5 bg-primary/5 rounded-2xl border border-primary/10 animate-in">
               <p class="text-[10px] font-bold text-gray-600">Khan Bank: <span class="text-primary font-black">575901576</span></p>
               <p class="text-[10px] font-bold text-gray-600 mt-1">Хүлээн авагч: <span class="font-black uppercase">Х.Элбэг-Эрдэнэ</span></p>
-              <p class="text-[9px] text-gray-400 mt-2 italic">* Гүйлгээний утга дээр утасны дугаараа бичнэ үү.</p>
             </div>
           ` : ''}
         </div>
-
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 animate-in slide-in-from-bottom-4">
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
            <h2 class="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-widest">Хүргэлтийн мэдээлэл</h2>
-           <div class="space-y-3">
-             <input id="order-phone" type="tel" placeholder="Утасны дугаар" class="w-full h-12 bg-gray-50 border-none rounded-2xl px-5 text-sm font-bold shadow-inner">
-             <textarea id="order-address" rows="3" placeholder="Дэлгэрэнгүй хаяг..." class="w-full bg-gray-50 border-none rounded-2xl p-5 text-sm font-bold shadow-inner resize-none"></textarea>
-           </div>
+           <input id="order-phone" type="tel" placeholder="Утасны дугаар" class="w-full h-12 bg-gray-50 border-none rounded-2xl px-5 text-sm font-bold shadow-inner mb-3">
+           <textarea id="order-address" rows="3" placeholder="Дэлгэрэнгүй хаяг..." class="w-full bg-gray-50 border-none rounded-2xl p-5 text-sm font-bold shadow-inner resize-none"></textarea>
         </div>
       </div>
-
       <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] p-6 bg-white border-t z-50 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
-        <div>
-           <p class="text-[10px] font-black text-gray-400 uppercase">Нийт дүн</p>
-           <p class="text-2xl font-black text-primary">${total.toLocaleString()}₮</p>
-        </div>
-        <button onclick="window.confirmOrder()" class="bg-primary text-white px-10 py-4 rounded-2xl font-black shadow-xl shadow-primary/20 active:scale-95 transition-all uppercase text-xs tracking-widest">Батлах</button>
+        <div><p class="text-[10px] font-black text-gray-400 uppercase">Нийт дүн</p><p class="text-2xl font-black text-primary">${total.toLocaleString()}₮</p></div>
+        <button onclick="window.confirmOrder()" class="bg-primary text-white px-10 py-4 rounded-2xl font-black active:scale-95 transition-all">Батлах</button>
       </div>
     </div>
   `;
@@ -431,7 +433,7 @@ function renderAdmin() {
           ${tab === 'categories' ? `<button onclick="window.setState({adminFormMode: 'add_category', editingId: null, tempSubCategories: []})" class="bg-primary text-white p-2 rounded-xl shadow-lg active:scale-95"><span class="material-symbols-outlined">add_circle</span></button>` : ''}
         </div>
       </header>
-      <div class="flex p-2 gap-1 bg-white border-b border-gray-100 shadow-inner">
+      <div class="flex p-2 gap-1 bg-white border-b border-gray-100">
         ${[{id: 'orders', label: 'Захиалга', icon: 'receipt_long'},{id: 'products', label: 'Бараа', icon: 'inventory_2'},{id: 'categories', label: 'Ангилал', icon: 'grid_view'}].map(t => `<button onclick="window.setState({activeAdminTab: '${t.id}', adminFormMode: null})" class="flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all ${tab === t.id ? 'bg-primary/10 text-primary shadow-sm border border-primary/20' : 'text-gray-400'}"><span class="material-symbols-outlined text-lg">${t.icon}</span><span class="text-[9px] font-black uppercase tracking-tighter">${t.label}</span></button>`).join('')}
       </div>
       <main class="flex-1 overflow-y-auto p-4 space-y-4 pb-32 no-scrollbar">
@@ -449,61 +451,40 @@ function renderProductForm() {
   const selectedCatName = state.selectedCategoryForProduct || (editingProduct?.category) || (state.categories[0]?.name || '');
   const currentCat = state.categories.find(c => c.name === selectedCatName);
   const subCats = currentCat ? currentCat.sub : [];
-  
-  // Хэрэв засварлаж байгаа бол хуучин зургуудыг `uploadedImages`-т анхлан ачаалж өгнө
   const currentImages = state.uploadedImages.length > 0 ? state.uploadedImages : (editingProduct?.images || (editingProduct?.image ? [editingProduct.image] : []));
 
   return `
     <div class="bg-white p-6 rounded-[32px] shadow-xl border border-primary/10 space-y-5 animate-in">
       <h2 class="text-xs font-black text-primary uppercase tracking-widest">${isEdit ? 'Бараа засах' : 'Шинэ бараа'}</h2>
       <div class="space-y-4">
-        
-        <!-- Олон зураг оруулах хэсэг -->
         <div class="space-y-2">
-          <label class="text-[9px] font-black text-gray-400 uppercase ml-2">Зургууд (Эхний зураг нүүр зураг болно)</label>
+          <label class="text-[9px] font-black text-gray-400 uppercase ml-2">Зургууд (Эхнийх нь нүүр зураг)</label>
           <div class="flex overflow-x-auto gap-3 pb-4 no-scrollbar">
-            
             ${currentImages.map((img, i) => `
-              <div class="w-20 h-20 flex-shrink-0 rounded-2xl overflow-hidden relative border-2 ${i === 0 ? 'border-primary' : 'border-gray-100'} shadow-sm animate-in zoom-in">
+              <div class="w-20 h-20 flex-shrink-0 rounded-2xl overflow-hidden relative border-2 ${i === 0 ? 'border-primary' : 'border-gray-100'} shadow-sm">
                 <img src="${img}" class="w-full h-full object-cover">
                 <button onclick="window.removeUploadedImage(${i})" class="absolute top-1 right-1 bg-white/90 rounded-full w-5 h-5 flex items-center justify-center text-red-500 shadow-sm transition-transform active:scale-75"><span class="material-symbols-outlined text-[14px]">close</span></button>
-                ${i === 0 ? '<div class="absolute bottom-0 left-0 w-full bg-primary text-white text-[6px] font-black text-center py-0.5">НҮҮР ЗУРАГ</div>' : ''}
               </div>
             `).join('')}
-
-            <!-- Үргэлж харагдах Зураг нэмэх товчлуур -->
-            <div onclick="document.getElementById('product-multi-upload').click()" class="w-20 h-20 flex-shrink-0 bg-primary/5 rounded-2xl border-2 border-dashed border-primary/20 flex flex-col items-center justify-center cursor-pointer hover:bg-primary/10 transition-colors shadow-sm group">
+            <div onclick="document.getElementById('product-multi-upload').click()" class="w-20 h-20 flex-shrink-0 bg-primary/5 rounded-2xl border-2 border-dashed border-primary/20 flex flex-col items-center justify-center cursor-pointer shadow-sm group">
               <span class="material-symbols-outlined text-primary group-active:scale-90 transition-transform">add_a_photo</span>
               <span class="text-[7px] font-black text-primary mt-1 uppercase">Upload</span>
               <input id="product-multi-upload" type="file" accept="image/*" multiple class="hidden" onchange="window.handleProductImageUpload(event)">
             </div>
           </div>
         </div>
-
         <input id="new-p-name" placeholder="Барааны нэр" value="${editingProduct?.name || ''}" class="w-full h-12 bg-gray-50 border-none rounded-2xl px-5 text-xs font-bold shadow-inner">
         <input id="new-p-price" type="number" placeholder="Үнэ (₮)" value="${editingProduct?.price || ''}" class="w-full h-12 bg-gray-50 border-none rounded-2xl px-5 text-xs font-bold shadow-inner">
-        
-        <div class="space-y-1">
-          <label class="text-[9px] font-black text-gray-400 uppercase ml-2">Тайлбар</label>
-          <textarea id="new-p-desc" placeholder="Дэлгэрэнгүй мэдээлэл..." class="w-full bg-gray-50 border-none rounded-2xl p-5 text-xs font-bold shadow-inner h-32 resize-none">${editingProduct?.description || ''}</textarea>
-        </div>
-
         <div class="grid grid-cols-2 gap-3">
-          <div class="space-y-1">
-            <label class="text-[9px] font-black text-gray-400 uppercase ml-2">Ангилал</label>
-            <select id="new-p-cat" onchange="window.handleProductCatChange(this.value)" class="w-full h-12 bg-gray-50 border-none rounded-2xl px-5 text-[10px] font-bold shadow-inner">
-              ${state.categories.map(c => `<option value="${c.name}" ${c.name === selectedCatName ? 'selected' : ''}>${c.name}</option>`).join('')}
-            </select>
-          </div>
-          <div class="space-y-1">
-            <label class="text-[9px] font-black text-gray-400 uppercase ml-2">Дэд</label>
-            <select id="new-p-subcat" class="w-full h-12 bg-gray-50 border-none rounded-2xl px-5 text-[10px] font-bold shadow-inner">
-              <option value="">Сонгох...</option>
-              ${subCats.map(s => `<option value="${s.name}" ${editingProduct?.subCategory === s.name ? 'selected' : ''}>${s.name}</option>`).join('')}
-            </select>
-          </div>
+          <select id="new-p-cat" onchange="window.handleProductCatChange(this.value)" class="w-full h-12 bg-gray-50 border-none rounded-2xl px-5 text-[10px] font-bold shadow-inner">
+            ${state.categories.map(c => `<option value="${c.name}" ${c.name === selectedCatName ? 'selected' : ''}>${c.name}</option>`).join('')}
+          </select>
+          <select id="new-p-subcat" class="w-full h-12 bg-gray-50 border-none rounded-2xl px-5 text-[10px] font-bold shadow-inner">
+            <option value="">Дэд...</option>
+            ${subCats.map(s => `<option value="${s.name}" ${editingProduct?.subCategory === s.name ? 'selected' : ''}>${s.name}</option>`).join('')}
+          </select>
         </div>
-
+        <textarea id="new-p-desc" placeholder="Тайлбар..." class="w-full bg-gray-50 border-none rounded-2xl p-5 text-xs font-bold shadow-inner h-32 resize-none">${editingProduct?.description || ''}</textarea>
         <div class="flex gap-2 pt-2">
           <button onclick="window.setState({adminFormMode: null, editingId: null, uploadedImages: []})" class="flex-1 h-14 bg-gray-100 text-gray-500 font-black rounded-2xl uppercase tracking-widest text-[10px]">Болих</button>
           <button onclick="window.addProductAction()" class="flex-2 h-14 bg-primary text-white font-black rounded-2xl shadow-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all">Хадгалах</button>
@@ -515,12 +496,12 @@ function renderProductForm() {
 
 function renderAdminProducts() {
   return state.products.map(p => `
-    <div class="bg-white p-4 rounded-3xl flex items-center justify-between shadow-sm border border-gray-100 animate-in">
+    <div class="bg-white p-4 rounded-3xl flex items-center justify-between shadow-sm border border-gray-100 mb-2">
       <div class="flex items-center gap-3 overflow-hidden flex-1">
         <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover shadow-sm">
         <div class="flex flex-col overflow-hidden">
-          <span class="text-[10px] font-black truncate text-gray-800 uppercase tracking-tight">${p.name}</span>
-          <span class="text-[9px] text-primary font-black uppercase mt-0.5">${p.price.toLocaleString()}₮</span>
+          <span class="text-[10px] font-black truncate text-gray-800 uppercase">${p.name}</span>
+          <span class="text-[9px] text-primary font-black uppercase">${p.price.toLocaleString()}₮</span>
         </div>
       </div>
       <div class="flex gap-1 ml-4">
@@ -533,8 +514,8 @@ function renderAdminProducts() {
 
 function renderAdminCategories() {
   return state.categories.map(c => `
-    <div class="bg-white p-4 rounded-3xl flex items-center justify-between shadow-sm border border-gray-100">
-      <div class="flex flex-col"><span class="text-xs font-black text-gray-800 uppercase tracking-tight">${c.name}</span><span class="text-[9px] text-gray-400 font-bold uppercase">${c.sub?.length || 0} дэд ангилал</span></div>
+    <div class="bg-white p-4 rounded-3xl flex items-center justify-between shadow-sm border border-gray-100 mb-2">
+      <div class="flex flex-col"><span class="text-xs font-black text-gray-800 uppercase tracking-tight">${c.name}</span><span class="text-[9px] text-gray-400 font-bold uppercase">${c.sub?.length || 0} дэд</span></div>
       <div class="flex gap-1">
         <button onclick="window.editCategoryAction('${c.id}')" class="w-9 h-9 flex items-center justify-center text-primary bg-primary/5 rounded-full"><span class="material-symbols-outlined text-lg">edit</span></button>
         <button onclick="window.deleteCategoryAction('${c.id}')" class="w-9 h-9 flex items-center justify-center text-red-300 bg-red-50 rounded-full"><span class="material-symbols-outlined text-lg">close</span></button>
@@ -546,15 +527,12 @@ function renderAdminCategories() {
 function renderAdminOrders() {
   if (state.orders.length === 0) return `<p class="text-center text-gray-300 py-10 font-black uppercase text-[10px]">Захиалга байхгүй</p>`;
   return state.orders.slice().reverse().map(o => `
-    <div class="bg-white p-5 rounded-[32px] border border-gray-100 shadow-sm space-y-3 mb-4 animate-in">
+    <div class="bg-white p-5 rounded-[32px] border border-gray-100 shadow-sm mb-4">
       <div class="flex justify-between font-black text-[10px] text-primary"><span>${o.id}</span><span>${o.createdAt}</span></div>
       <div class="text-[10px] font-bold text-gray-700">Утас: ${o.phone}</div>
-      <div class="text-[9px] text-gray-400 leading-tight">Хаяг: ${o.address}</div>
-      <div class="bg-gray-50 p-4 rounded-2xl shadow-inner border border-gray-100">
-        ${o.items.map(i => `<div class="flex justify-between text-[9px] font-bold mb-1"><span>${i.name}</span><span>x${i.quantity}</span></div>`).join('')}
-        <div class="h-px bg-gray-200 my-2"></div>
+      <div class="text-[9px] text-gray-400">Хаяг: ${o.address}</div>
+      <div class="bg-gray-50 p-4 rounded-2xl shadow-inner border border-gray-100 mt-2">
         <div class="flex justify-between font-black text-primary text-[10px]"><span>Нийт</span><span>${o.totalAmount.toLocaleString()}₮</span></div>
-        <div class="text-[8px] font-black text-gray-400 uppercase mt-2 text-right">${o.paymentMethod === 'bank' ? 'Дансаар' : 'Хүлээн авахдаа'}</div>
       </div>
     </div>
   `).join('');
@@ -569,22 +547,10 @@ function renderCategoryForm() {
       <h2 class="text-xs font-black text-primary uppercase tracking-widest">${isEdit ? 'Ангилал засах' : 'Шинэ ангилал'}</h2>
       <div class="space-y-4">
         <input id="new-cat-name" placeholder="Ангилалын нэр" value="${editingCategory?.name || ''}" class="w-full h-12 bg-gray-50 border-none rounded-2xl px-5 text-xs font-bold shadow-inner">
-        <div class="space-y-2">
-          <div class="flex justify-between items-center px-1"><h3 class="text-[10px] font-black text-gray-400 uppercase">Дэд ангилалууд</h3><button onclick="window.addTempSubRow()" class="text-primary text-[10px] font-black">+ НЭМЭХ</button></div>
-          ${tempSubs.map((s, i) => `
-            <div class="p-3 bg-gray-50 rounded-xl space-y-2 relative border border-gray-100">
-               <button onclick="window.removeTempSubRow(${i})" class="absolute top-1 right-1 text-red-300"><span class="material-symbols-outlined text-sm">close</span></button>
-               <input oninput="window.updateTempSub(${i}, 'name', this.value)" placeholder="Дэд нэр" class="w-full bg-white border-none rounded-lg p-2 text-[10px] font-bold shadow-sm" value="${s.name}">
-               <div onclick="document.getElementById('sub-upload-${i}').click()" class="w-full h-20 bg-white border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden cursor-pointer shadow-inner">
-                 <img src="${s.image || 'https://via.placeholder.com/100?text=Зураг'}" class="h-full object-contain">
-               </div>
-               <input id="sub-upload-${i}" type="file" accept="image/*" class="hidden" onchange="window.handleFilesSelect(event, (imgs) => window.updateTempSub(${i}, 'image', imgs[0]))">
-            </div>
-          `).join('')}
-        </div>
+        <div class="flex justify-between items-center"><h3 class="text-[10px] font-black text-gray-400 uppercase">Дэд</h3><button onclick="window.addTempSubRow()" class="text-primary text-[10px] font-black">+ НЭМЭХ</button></div>
         <div class="flex gap-2">
           <button onclick="window.setState({adminFormMode: null, editingId: null, tempSubCategories: []})" class="flex-1 h-14 bg-gray-100 text-gray-500 font-black rounded-2xl uppercase tracking-widest text-[10px]">Болих</button>
-          <button onclick="window.addCategoryAction()" class="flex-2 h-14 bg-primary text-white font-black rounded-2xl shadow-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all">${isEdit ? 'ШИНЭЧЛЭХ' : 'ҮҮСГЭХ'}</button>
+          <button onclick="window.addCategoryAction()" class="flex-2 h-14 bg-primary text-white font-black rounded-2xl shadow-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all">Хадгалах</button>
         </div>
       </div>
     </div>
@@ -610,203 +576,6 @@ function renderBottomNav() {
     </nav>
   `;
 }
-
-// --- ACTIONS ---
-
-window.handleLoginAction = () => {
-  const email = document.getElementById('email-input').value;
-  if (!email || !email.includes('@')) return alert("Зөв мэйл хаяг оруулна уу.");
-  const user = { email, joinedAt: new Date().toLocaleString(), avatar: null };
-  localStorage.setItem('user', JSON.stringify(user));
-  setState({ currentUser: user, currentScreen: 'HOME' });
-};
-
-window.handleLogoutAction = () => {
-  localStorage.removeItem('user');
-  setState({ currentUser: null, currentScreen: 'LOGIN', cart: [] });
-};
-
-window.handleProductClick = (id) => {
-  setState({ currentScreen: 'PRODUCT_DETAIL', selectedProductId: id });
-};
-
-window.handleBuyNow = (id) => {
-  const p = state.products.find(x => x.id === id);
-  // Clear cart and add only this item for direct buy
-  state.cart = [{ ...p, quantity: 1 }];
-  setState({ currentScreen: 'CHECKOUT' });
-};
-
-window.handleSubCatClick = (subName, parentName) => {
-  setState({ selectedSubCatName: subName, selectedParentCatName: parentName, currentScreen: 'SUB_CATEGORY_PRODUCTS' });
-};
-
-window.handleMainCatClick = (parentName) => {
-  setState({ selectedParentCatName: parentName, currentScreen: 'CATEGORY_PRODUCTS' });
-};
-
-window.handleProfilePicChange = (b64) => {
-  if (!b64) return;
-  const updatedUser = { ...state.currentUser, avatar: b64 };
-  localStorage.setItem('user', JSON.stringify(updatedUser));
-  setState({ currentUser: updatedUser });
-  showToast("Профайл зураг шинэчлэгдлээ!");
-};
-
-window.addToCartAction = (id) => {
-  const p = state.products.find(x => x.id === id);
-  const exists = state.cart.find(i => i.id === id);
-  if (exists) exists.quantity++;
-  else state.cart.push({ ...p, quantity: 1 });
-  setState({});
-  showToast("Сагсанд нэмэгдлээ!");
-};
-
-window.updateQty = (id, d) => {
-  const item = state.cart.find(i => i.id === id);
-  if (item) { item.quantity = Math.max(1, item.quantity + d); setState({}); }
-};
-
-window.removeFromCartAction = (id) => {
-  state.cart = state.cart.filter(i => i.id !== id);
-  setState({});
-};
-
-window.confirmOrder = () => {
-  const phone = document.getElementById('order-phone').value;
-  const address = document.getElementById('order-address').value;
-  if (!phone || !address) return alert("Мэдээллээ бүрэн оруулна уу.");
-  const order = { id: 'ORD-' + Date.now(), userEmail: state.currentUser.email, phone, address, items: [...state.cart], totalAmount: state.cart.reduce((s, i) => s + (i.price * i.quantity), 0), createdAt: new Date().toLocaleString(), paymentMethod: state.paymentMethod };
-  state.orders.push(order);
-  localStorage.setItem('orders', JSON.stringify(state.orders));
-  state.cart = [];
-  setState({ currentScreen: 'PROFILE' });
-  showToast("Захиалга амжилттай баталгаажлаа!");
-};
-
-// --- ADMIN ACTIONS ---
-
-window.editProductAction = (id) => {
-  const p = state.products.find(x => x.id === id);
-  setState({ adminFormMode: 'edit_product', editingId: id, selectedCategoryForProduct: '', uploadedImages: p.images || [p.image] });
-};
-
-window.handleProductImageUpload = (event) => {
-  window.handleFilesSelect(event, (imgs) => {
-    // uploadedImages-ийг зөв ачаалах
-    const existing = state.uploadedImages.length > 0 ? state.uploadedImages : [];
-    setState({ uploadedImages: [...existing, ...imgs] });
-  });
-};
-
-window.removeUploadedImage = (index) => {
-  const imgs = [...state.uploadedImages];
-  imgs.splice(index, 1);
-  setState({ uploadedImages: imgs });
-};
-
-window.addProductAction = () => {
-  const name = document.getElementById('new-p-name').value;
-  const priceInput = document.getElementById('new-p-price').value;
-  const description = document.getElementById('new-p-desc').value;
-  const category = document.getElementById('new-p-cat').value;
-  const subCategory = document.getElementById('new-p-subcat').value;
-  
-  const price = parseInt(priceInput);
-  const images = state.uploadedImages;
-  
-  if (!name || isNaN(price) || images.length === 0) return alert("Мэдээллээ бүрэн бөглөнө үү (Зураг, Нэр, Үнэ).");
-  
-  const mainImage = images[0]; // Эхний зургийг нүүр зураг болгоно
-
-  if (state.adminFormMode === 'edit_product') {
-    const index = state.products.findIndex(p => p.id === state.editingId);
-    if (index > -1) {
-      state.products[index] = { 
-        ...state.products[index], 
-        name, 
-        price, 
-        description, 
-        image: mainImage, 
-        images: [...images], 
-        category, 
-        subCategory 
-      };
-      showToast("Бүтээгдэхүүн шинэчлэгдлээ!");
-    }
-  } else {
-    state.products.unshift({ 
-      id: Date.now().toString(), 
-      name, 
-      price, 
-      description, 
-      image: mainImage, 
-      images: [...images], 
-      category, 
-      subCategory, 
-      tag: 'ШИНЭ' 
-    });
-    showToast("Шинэ бүтээгдэхүүн нэмэгдлээ!");
-  }
-  
-  localStorage.setItem('products', JSON.stringify(state.products));
-  setState({ adminFormMode: null, editingId: null, uploadedImages: [] });
-};
-
-window.editCategoryAction = (id) => {
-  const cat = state.categories.find(c => c.id === id);
-  setState({ adminFormMode: 'edit_category', editingId: id, tempSubCategories: cat.sub ? JSON.parse(JSON.stringify(cat.sub)) : [] });
-};
-
-window.handleProductCatChange = (val) => {
-  setState({ selectedCategoryForProduct: val });
-};
-
-window.addCategoryAction = () => {
-  const name = document.getElementById('new-cat-name').value;
-  if (!name) return alert("Нэр оруулна уу.");
-  if (state.adminFormMode === 'edit_category') {
-    const index = state.categories.findIndex(c => c.id === state.editingId);
-    if (index > -1) state.categories[index] = { ...state.categories[index], name, sub: [...state.tempSubCategories] };
-  } else {
-    state.categories.push({ id: Date.now().toString(), name, sub: [...state.tempSubCategories] });
-  }
-  localStorage.setItem('categories', JSON.stringify(state.categories));
-  setState({ adminFormMode: null, editingId: null, tempSubCategories: [] });
-};
-
-window.addTempSubRow = () => {
-  state.tempSubCategories.push({ id: Date.now().toString(), name: '', image: '' });
-  setState({});
-};
-
-window.removeTempSubRow = (i) => {
-  state.tempSubCategories.splice(i, 1);
-  setState({});
-};
-
-window.updateTempSub = (i, field, val) => {
-  state.tempSubCategories[i][field] = val;
-  setState({});
-};
-
-window.deleteProductAction = (id) => {
-  if (confirm("Бүтээгдэхүүнийг устгах уу?")) { 
-    state.products = state.products.filter(p => p.id !== id); 
-    localStorage.setItem('products', JSON.stringify(state.products));
-    setState({}); 
-    showToast("Устгагдлаа");
-  }
-};
-
-window.deleteCategoryAction = (id) => {
-  if (confirm("Ангилалыг устгах уу?")) { 
-    state.categories = state.categories.filter(c => c.id !== id); 
-    localStorage.setItem('categories', JSON.stringify(state.categories));
-    setState({}); 
-    showToast("Ангилал устгагдлаа");
-  }
-};
 
 function renderSubCategoryProducts() {
   const products = state.products.filter(p => p.category === state.selectedParentCatName && p.subCategory === state.selectedSubCatName);
@@ -841,12 +610,144 @@ function renderCategoryProducts() {
       </header>
       <main class="flex-1 overflow-y-auto p-4 pb-32">
         <div class="grid grid-cols-2 gap-4">
-          ${products.length > 0 ? products.map(p => renderProductCard(p)).join('') : '<p class="col-span-2 text-center text-gray-400 py-20 font-black uppercase text-[10px]">Энэ ангилалд бараа байхгүй байна</p>'}
+          ${products.length > 0 ? products.map(p => renderProductCard(p)).join('') : '<p class="col-span-2 text-center text-gray-400 py-20 font-black uppercase text-[10px]">Бараа байхгүй</p>'}
         </div>
       </main>
     </div>
   `;
 }
+
+// --- ACTIONS ---
+window.handleLoginAction = () => {
+  const email = document.getElementById('email-input').value;
+  if (!email || !email.includes('@')) return alert("Зөв мэйл хаяг оруулна уу.");
+  const user = { email, joinedAt: new Date().toLocaleString(), avatar: null };
+  localStorage.setItem('user', JSON.stringify(user));
+  setState({ currentUser: user, currentScreen: 'HOME' });
+};
+
+window.handleLogoutAction = () => {
+  localStorage.removeItem('user');
+  setState({ currentUser: null, currentScreen: 'LOGIN', cart: [] });
+};
+
+window.handleProductClick = (id) => {
+  setState({ currentScreen: 'PRODUCT_DETAIL', selectedProductId: id });
+};
+
+window.handleBuyNow = (id) => {
+  const p = state.products.find(x => x.id === id);
+  state.cart = [{ ...p, quantity: 1 }];
+  updateAiMessage();
+  setState({ currentScreen: 'CHECKOUT' });
+};
+
+window.handleSubCatClick = (subName, parentName) => {
+  setState({ selectedSubCatName: subName, selectedParentCatName: parentName, currentScreen: 'SUB_CATEGORY_PRODUCTS' });
+};
+
+window.handleMainCatClick = (parentName) => {
+  setState({ selectedParentCatName: parentName, currentScreen: 'CATEGORY_PRODUCTS' });
+};
+
+window.handleProfilePicChange = (b64) => {
+  if (!b64) return;
+  const updatedUser = { ...state.currentUser, avatar: b64 };
+  localStorage.setItem('user', JSON.stringify(updatedUser));
+  setState({ currentUser: updatedUser });
+};
+
+window.addToCartAction = (id) => {
+  const p = state.products.find(x => x.id === id);
+  const exists = state.cart.find(i => i.id === id);
+  if (exists) exists.quantity++;
+  else state.cart.push({ ...p, quantity: 1 });
+  updateAiMessage();
+  setState({});
+  showToast("Сагсанд нэмэгдлээ!");
+};
+
+window.updateQty = (id, d) => {
+  const item = state.cart.find(i => i.id === id);
+  if (item) { item.quantity = Math.max(1, item.quantity + d); updateAiMessage(); setState({}); }
+};
+
+window.removeFromCartAction = (id) => {
+  state.cart = state.cart.filter(i => i.id !== id);
+  updateAiMessage();
+  setState({});
+};
+
+window.confirmOrder = () => {
+  const phone = document.getElementById('order-phone').value;
+  const address = document.getElementById('order-address').value;
+  if (!phone || !address) return alert("Бүрэн бөглөнө үү.");
+  const order = { id: 'ORD-' + Date.now(), userEmail: state.currentUser.email, phone, address, items: [...state.cart], totalAmount: state.cart.reduce((s, i) => s + (i.price * i.quantity), 0), createdAt: new Date().toLocaleString() };
+  state.orders.push(order);
+  localStorage.setItem('orders', JSON.stringify(state.orders));
+  state.cart = [];
+  setState({ currentScreen: 'PROFILE' });
+  showToast("Захиалга батлагдлаа!");
+};
+
+window.editProductAction = (id) => {
+  const p = state.products.find(x => x.id === id);
+  setState({ adminFormMode: 'edit_product', editingId: id, uploadedImages: p.images || [p.image] });
+};
+
+window.handleProductImageUpload = (event) => {
+  window.handleFilesSelect(event, (imgs) => {
+    setState({ uploadedImages: [...state.uploadedImages, ...imgs] });
+  });
+};
+
+window.removeUploadedImage = (index) => {
+  const imgs = [...state.uploadedImages];
+  imgs.splice(index, 1);
+  setState({ uploadedImages: imgs });
+};
+
+window.addProductAction = () => {
+  const name = document.getElementById('new-p-name').value;
+  const price = parseInt(document.getElementById('new-p-price').value);
+  const description = document.getElementById('new-p-desc').value;
+  const category = document.getElementById('new-p-cat').value;
+  const subCategory = document.getElementById('new-p-subcat').value;
+  const images = state.uploadedImages;
+  if (!name || isNaN(price) || images.length === 0) return alert("Дутуу байна.");
+  const mainImage = images[0];
+  if (state.adminFormMode === 'edit_product') {
+    const idx = state.products.findIndex(p => p.id === state.editingId);
+    if (idx > -1) state.products[idx] = { ...state.products[idx], name, price, description, image: mainImage, images, category, subCategory };
+  } else {
+    state.products.unshift({ id: Date.now().toString(), name, price, description, image: mainImage, images, category, subCategory });
+  }
+  localStorage.setItem('products', JSON.stringify(state.products));
+  setState({ adminFormMode: null, editingId: null, uploadedImages: [] });
+};
+
+window.editCategoryAction = (id) => {
+  const cat = state.categories.find(c => c.id === id);
+  setState({ adminFormMode: 'edit_category', editingId: id, tempSubCategories: [] });
+};
+
+window.handleProductCatChange = (val) => { setState({ selectedCategoryForProduct: val }); };
+
+window.deleteProductAction = (id) => {
+  if (confirm("Устгах уу?")) { 
+    state.products = state.products.filter(p => p.id !== id); 
+    localStorage.setItem('products', JSON.stringify(state.products));
+    setState({}); 
+  }
+};
+
+window.deleteCategoryAction = (id) => {
+  if (confirm("Устгах уу?")) { 
+    state.categories = state.categories.filter(c => c.id !== id); 
+    localStorage.setItem('categories', JSON.stringify(state.categories));
+    setState({}); 
+  }
+};
 
 // --- INITIAL RENDER ---
 renderApp();

@@ -1,68 +1,7 @@
 
 import { Product, Category, SubCategory } from './types';
 
-export const PRODUCTS: Product[] = [
-  {
-    id: '1',
-    name: 'Elite Performance Pro Runners - Хөнгөн, амьсгалдаг',
-    price: 45000,
-    originalPrice: 310000,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC-PMrKLOOJZU8ifeBTS_rsxeB_nh8CplQ0KDgoZ2Qow0fj0K35-bYQr7sl1aeP6I8JXcx82XZzagRlwdCu0wtsPoypmti0rteUXeqJk5lpTF01UUE0_SSNycAsJHG1alNsS52sOt-V9Cddf6maxaLv-uyDFyilZeacFgbn6s2Ihe358mPHPQZjAPxPGvFQibeL_xGdg-YSj1Z0eytscis5Dh20GNhz3h3pcB0Epk9tmbsA_iA5xdSHdG7GE-Lu9CTAt2nPjpRnsx-L',
-    category: 'shoes',
-    tag: '85% ХЯМДРАЛ',
-    soldCount: '1.2к+'
-  },
-  {
-    id: '2',
-    name: 'Шуугиан тусгаарлагчтай утасгүй чихэвч',
-    price: 68000,
-    originalPrice: 175000,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAXPh38hIpU7EO9AtYmX-_EzO7ODesHzOf9I46I13awKN9CVwgPGfBG_tjy0HKfOhKfNHtW-FsT42ksmG0m-OU2R-yubY3DP-rTLXoh7h-8xtsLej56CL4dTLfXFmHfrsV1LW4KdyoEAqT3yun4mrzvLmfghIY-mw61EVhqSXr-8HDpZip0UctoSHsBjzHRq0uXZ18frI01oh4Y7QayXIlMTPfwi5-GEQ1pL2aJM2Bk6fOvyHojl83n7DuWs9_EEafgXVMZDZtqSZ0e',
-    category: 'electronics',
-    tag: 'ХЭМНЭЛТ 100к',
-    soldCount: '3.5к+'
-  },
-  {
-    id: '3',
-    name: 'Минималист загварын Classic бугуйн цаг',
-    price: 29500,
-    originalPrice: 87000,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAhfs7ADD1_kK15bEP_74VwScXR_FG95GUAzOBoTI26yTvWgzI-4eqfeudLc7yO_c9fbbukObQQoDRQQajiKC79YzhcDkBvc_1rq3oGJZyXymSlCbKXNpzaRoS2LqMAaXMSqhTABUgqIKRCXxSn-wNrjRQK__lJG1TLpa6-7jjrfyjzhsmvWsnJW7ooY14XzMjSiw22UA6lEvYx5P2_XO9rvCDn7VWvEfAsMSEjo6wYwJT1lQganY7_j-IK5wR92XboXuAow0Jb82vb',
-    category: 'accessories',
-    tag: 'ШИНЭ',
-    soldCount: '500+'
-  },
-  {
-    id: '4',
-    name: 'GamerPro Surround Sound Headset',
-    price: 53200,
-    originalPrice: 122000,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCZR8IhdYGoV5gKjVjkEYyHcQj3qWBY2xpmkWZ6TC33eTX0LJvS9tf9vmOxHQPUr3k-vByl0pEjnNJqQmCQm-nkyT7k7Y5aavtz3uVJQevjP53WaTj5YnM2YjThe6ZdSxM3AWGFNnD16e-kvgqyJl80XFnXq2B78cDayEj5cyZrJyE3TkQmXDV3aAy0JFuSxP2agDQnutjIaoMkGKWtBs7ewcWeKioU4T2kbgo9OfEwYwiAMqpHeE4J_f0GiKHTN-YP5jwmZ6JgDVL6',
-    category: 'electronics',
-    tag: 'ОНЦЛОХ',
-    soldCount: '800+'
-  },
-  {
-    id: '5',
-    name: 'RGB Гэрэлтэй механик гар - Тоглоомын',
-    price: 89000,
-    originalPrice: 145000,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB-vRo-cymUUgBSYaIygWoF8mOAZ4oyPNxHBEBFQrlubLvpp6EBg8etcgfFaS5RDTIGO2uhga5A9Pq4Q6RZMkE78Oreallohd9OhtXO9HGCzokYkra0DjMvkWXOBwDScZJJGNRj__unISfqlWNr3FL5bx5etN--WlPxEFIjshFb_y2AsgP3LlYW2cspfXkEQY4N8nAjYBN-VItBCDS1x3JptIMO3gRJeZoCYIf3FbczX0S9hrmhzsyPp-4dA8S_YgoVYhrxtJ_dGyX0',
-    category: 'electronics',
-    tag: 'ХЯМДРАЛ',
-    soldCount: '150+'
-  },
-  {
-    id: '6',
-    name: 'Organic Арьс арчилгааны иж бүрдэл',
-    price: 112000,
-    originalPrice: 185000,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnWM6caMxhIjf7klpZBrYYyNjbMTp74yyvezUFvlLrlOn8uaVUIf4dXJSzP_UwxkCYYFmaQHFVCjlSIPDjXvYGzxcKEccoJhToGKM62ugyRcv2VLyLZIxbTp_gfGfpZ_hB0WMbzzjYyulow5nW4UJsoUobOzg2GjKX4RUcOM0ezXgNdPrXS905Q7XYKALZzK5--YwLbBcq3xpCRMPja4_QSQdPfcEm1OYhMnT1J3SO3uC2VcOoidchPJeCYEg1dNW7ZVOa-6RvkIjE',
-    category: 'beauty',
-    tag: 'БЭЛЭГТЭЙ',
-    soldCount: '2.1к+'
-  }
-];
+export const PRODUCTS: Product[] = [];
 
 // Fix: Corrected type definition to SubCategory[] so the 'image' property is recognized, resolving lines 83-93 errors.
 export const SUB_CATEGORIES: Record<string, SubCategory[]> = {
