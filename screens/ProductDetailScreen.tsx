@@ -51,11 +51,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Чанарийн зэрэг</p>
-            <p className="text-xs font-bold mt-1">Premium Grade A</p>
+            <p className="text-xs font-bold mt-1">Туршигдсан</p>
           </div>
           <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Хүргэлт</p>
-            <p className="text-xs font-bold mt-1">Шуурхай</p>
+            <p className="text-xs font-bold mt-1">2-4цагийн дтор хүргэнэ</p>
           </div>
         </div>
       </div>
