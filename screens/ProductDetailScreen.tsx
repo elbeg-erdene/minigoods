@@ -44,7 +44,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
           <h2 className="text-lg font-bold">Бүтээгдэхүүний танилцуулга</h2>
           <p className="text-[12px] text-gray-700 mt-2">{product.fullDescription}</p>
           <div className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-            {product.description || "Энэхүү бүтээгдэхүүний дэлгэрэнгүй тайлбар удахгүй орох болно. MiniGoods-ийг сонгосон танд баярлалаа."}
+            {product.description || "MiniGoods-ийг сонгосон танд баярлалаа."}
           </div>
         </div>
 
