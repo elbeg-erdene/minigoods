@@ -42,8 +42,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
 
         <div className="space-y-4">
           <h2 className="text-lg font-bold">Бүтээгдэхүүний танилцуулга</h2>
-          <p className="text-[12px] text-gray-700 mt-2">{product.fullDescription}</p>
-          <div className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+          <p className="text-[15px] text-gray-700 mt-2">{product.fullDescription}</p>
+          <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
             {product.description || "MiniGoods-ийг сонгосон танд баярлалаа."}
           </div>
         </div>
@@ -55,7 +55,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
           </div>
           <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Хүргэлт</p>
-            <p className="text-xs font-bold mt-1">2-4цагийн дтор хүргэнэ</p>
+            <p className="text-xs font-bold mt-1">2-4цагийн дотор хүргэнэ</p>
           </div>
         </div>
       </div>
