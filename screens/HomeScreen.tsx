@@ -21,6 +21,7 @@ const ProductCard: React.FC<{ product: Product; onAddToCart: (p: Product) => voi
       </div>
       <div className="p-3 flex flex-col flex-1">
         <h3 className="text-xs font-medium line-clamp-2 mb-1 min-h-[32px]">{product.name}</h3>
+        <p className="text-[10px] text-gray-500 line-clamp-2">{product.shortDescription}</p>
         <div className="mt-auto flex flex-col">
           <span className="text-lg font-bold text-primary">{product.price.toLocaleString()}₮</span>
           {product.originalPrice && <span className="text-[10px] text-gray-400 line-through">{product.originalPrice.toLocaleString()}₮</span>}
