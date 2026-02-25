@@ -13,7 +13,7 @@ import SubCategoryProductsScreen from './screens/SubCategoryProductsScreen';
 import CategoryProductsScreen from './screens/CategoryProductsScreen';
 import BottomNav from './components/BottomNav';
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbxukjLE3VtWwc3v5EcyNNt4tUMRxAmxnEiVJvGLrOJ3SRxwBbVaQwW9eKgndya1lWgq/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwEA66HrXksTE9_6fXBa2TlfIJETGTHu7WOAjZpL6vX5kG5i7rhcIdZUaHY8whK0kB6/exec';
 
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>(Screen.LOGIN);
@@ -38,7 +38,7 @@ const App: React.FC = () => {
       const response = await fetch(API_URL);
       const data = await response.json();
       if (Array.isArray(data)) {
-        const activeProducts = data.filter((p: any) => String(p.active).toLowerCase() === 'true');
+        const activeProducts = data.filter((p: any) => p.active === true);
         setProducts(activeProducts);
       }
     } catch (error) {
