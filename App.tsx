@@ -125,16 +125,59 @@ const App: React.FC = () => {
         return selectedProduct ? <ProductDetailScreen product={selectedProduct} onBack={() => setCurrentScreen(Screen.HOME)} onAddToCart={addToCart} onBuyNow={handleBuyNow} /> : null;
       case Screen.CART:
         return <CartScreen cart={cart} onUpdateQuantity={(id, d) => setCart(prev => prev.map(i => i.id === id ? {...i, quantity: Math.max(1, i.quantity + d)} : i))} onToggleSelection={id => setCart(prev => prev.map(i => i.id === id ? {...i, selected: !i.selected} : i))} onToggleAll={s => setCart(prev => prev.map(i => ({...i, selected: s})))} onRemoveItem={id => setCart(prev => prev.filter(i => i.id !== id))} onCheckout={() => setCurrentScreen(Screen.CHECKOUT)} />;
-      case Screen.CHECKOUT:
-        const selItems = cart.filter(i => i.selected);
-        const total = selItems.reduce((acc, i) => acc + (i.price * i.quantity), 0);
-        return <CheckoutScreen items={selItems} totalAmount={total} onConfirm={data => {
-          const newOrder: Order = { ...data, id: `ORD-${Date.now()}`, userEmail: currentUser!.email, createdAt: new Date().toLocaleString() };
+    case Screen.CHECKOUT:
+  const selItems = cart.filter(i => i.selected);
+  const total = selItems.reduce((acc, i) => acc + (i.price * i.quantity), 0);
+
+  return <CheckoutScreen 
+    items={selItems} 
+    totalAmount={total} 
+    onConfirm={async (data) => {
+
+      const payload = {
+        paymentMethod: data.paymentMethod,
+        phoneNumber: data.phoneNumber,
+        address: data.address,
+        items: selItems
+      };
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+
+        if (result.status === "ok") {
+
+          const newOrder: Order = { 
+            ...data, 
+            id: `ORD-${Date.now()}`, 
+            userEmail: currentUser!.email, 
+            createdAt: new Date().toLocaleString() 
+          };
+
           setOrders(prev => [newOrder, ...prev]);
           setCart([]);
           setCurrentScreen(Screen.HOME);
           showToast("Захиалга баталгаажлаа!");
-        }} onBack={() => setCurrentScreen(Screen.CART)} />;
+
+        } else {
+          showToast("Sheet рүү илгээхэд алдаа гарлаа");
+        }
+
+      } catch (error) {
+        console.error(error);
+        showToast("Сервертэй холбогдож чадсангүй");
+      }
+
+    }} 
+    onBack={() => setCurrentScreen(Screen.CART)} 
+  />;
+    
+        
       case Screen.PROFILE:
         return <ProfileScreen user={currentUser} userOrders={orders.filter(o => o.userEmail === currentUser?.email)} onNavigate={setCurrentScreen} onLogout={() => { setCurrentUser(null); setCurrentScreen(Screen.LOGIN); }} />;
       default:
