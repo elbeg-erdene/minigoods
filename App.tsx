@@ -115,7 +115,7 @@ const App: React.FC = () => {
           <SubCategoryProductsScreen 
             subCategory={selectedSubCategory.sub} 
             parentCategoryName={selectedSubCategory.parent}
-            products={products.filter(p => p.category === selectedSubCategory.parent && p.subCategory === selectedSubCategory.sub.name)}
+            products={products.filter(p => p.category?.trim() === selectedSubCategory.parent?.trim() && p.subCategory?.trim() === selectedSubCategory.sub.name?.trim())}
             onAddToCart={addToCart}
             onProductClick={handleProductClick}
             onBack={() => setCurrentScreen(Screen.CATEGORIES)}
