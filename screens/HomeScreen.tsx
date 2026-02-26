@@ -67,19 +67,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ products, categories, onAddToCa
       </header>
 
 
-              <div className="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center text-primary group-hover:bg-primary/10 transition-colors shadow-sm overflow-hidden">
-                {cat.subCategories[0]?.image ? (
-                  <img src={cat.subCategories[0].image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100" alt={cat.name} />
-                ) : (
-                  <span className="material-symbols-outlined text-2xl">grid_view</span>
-                )}
-              </div>
-              <span className="text-[10px] font-bold text-gray-600 dark:text-gray-400 truncate max-w-[64px]">{cat.name}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
      {/* Текст Таб Navigation */}
       <nav className="sticky top-[116px] z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-white/5">
         <div className="flex whitespace-nowrap px-4">
