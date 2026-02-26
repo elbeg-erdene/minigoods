@@ -129,55 +129,52 @@ const App: React.FC = () => {
   const selItems = cart.filter(i => i.selected);
   const total = selItems.reduce((acc, i) => acc + (i.price * i.quantity), 0);
 
-  return <CheckoutScreen 
-    items={selItems} 
-    totalAmount={total} 
-    onConfirm={async (data) => {
+return <CheckoutScreen 
+  items={selItems} 
+  totalAmount={total} 
+  onConfirm={async (data) => {
 
-      const payload = {
-        paymentMethod: data.paymentMethod,
-        phoneNumber: data.phoneNumber,
-        address: data.address,
-        items: selItems
-      };
+    try {
 
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
+      const formData = new URLSearchParams();
+      formData.append("paymentMethod", data.paymentMethod);
+      formData.append("phoneNumber", data.phoneNumber);
+      formData.append("address", data.address);
+      formData.append("items", JSON.stringify(selItems));
 
-        const result = await res.json();
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: formData
+      });
 
-        if (result.status === "ok") {
+      const result = await res.json();
 
-          const newOrder: Order = { 
-            ...data, 
-            id: `ORD-${Date.now()}`, 
-            userEmail: currentUser!.email, 
-            createdAt: new Date().toLocaleString() 
-          };
+      if (result.status === "ok") {
 
-          setOrders(prev => [newOrder, ...prev]);
-          setCart([]);
-          setCurrentScreen(Screen.HOME);
-          showToast("Захиалга баталгаажлаа!");
+        const newOrder: Order = { 
+          ...data, 
+          id: `ORD-${Date.now()}`, 
+          userEmail: currentUser!.email, 
+          createdAt: new Date().toLocaleString() 
+        };
 
-        } else {
-          showToast("Sheet рүү илгээхэд алдаа гарлаа");
-        }
+        setOrders(prev => [newOrder, ...prev]);
+        setCart([]);
+        setCurrentScreen(Screen.HOME);
+        showToast("Захиалга баталгаажлаа!");
 
-      } catch (error) {
-        console.error(error);
-        showToast("Сервертэй холбогдож чадсангүй");
+      } else {
+        showToast("Sheet рүү илгээхэд алдаа гарлаа");
       }
 
-    }} 
-    onBack={() => setCurrentScreen(Screen.CART)} 
-  />;
-    
-        
+    } catch (error) {
+      console.error(error);
+      showToast("Сервертэй холбогдож чадсангүй");
+    }
+
+  }} 
+  onBack={() => setCurrentScreen(Screen.CART)} 
+/>;
       case Screen.PROFILE:
         return <ProfileScreen user={currentUser} userOrders={orders.filter(o => o.userEmail === currentUser?.email)} onNavigate={setCurrentScreen} onLogout={() => { setCurrentUser(null); setCurrentScreen(Screen.LOGIN); }} />;
       default:
