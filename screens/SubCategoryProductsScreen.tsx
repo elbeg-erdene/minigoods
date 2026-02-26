@@ -11,6 +11,8 @@ interface SubCategoryProductsScreenProps {
   onBack: () => void;
 }
 
+
+
 const ProductCard: React.FC<{ product: Product; onAddToCart: (p: Product) => void; onClick: () => void }> = ({ product, onAddToCart, onClick }) => {
   return (
     <div className="bg-white dark:bg-[#2d1b16] rounded-xl overflow-hidden shadow-sm flex flex-col border border-gray-100 dark:border-white/5 group hover:shadow-md transition-shadow">
@@ -20,9 +22,12 @@ const ProductCard: React.FC<{ product: Product; onAddToCart: (p: Product) => voi
       </div>
       <div className="p-3 flex flex-col flex-1">
         <h3 className="text-xs font-medium line-clamp-2 mb-1 min-h-[32px]">{product.name}</h3>
+        
+        {product.shortDescription && (<p className="text-[10px] text-gray-500 line-clamp-2 mb-1"> {product.shortDescription}</p>
+)}        
         <div className="mt-auto flex flex-col">
           <span className="text-lg font-bold text-primary">{product.price.toLocaleString()}₮</span>
-          {product.originalPrice && <span className="text-[10px] text-gray-400 line-through">{product.originalPrice.toLocaleString()}₮</span>}
+         
         </div>
         <button 
           onClick={() => onAddToCart(product)}
@@ -35,6 +40,8 @@ const ProductCard: React.FC<{ product: Product; onAddToCart: (p: Product) => voi
     </div>
   );
 };
+
+
 
 const SubCategoryProductsScreen: React.FC<SubCategoryProductsScreenProps> = ({ subCategory, parentCategoryName, products, onAddToCart, onProductClick, onBack }) => {
   return (
