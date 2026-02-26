@@ -67,9 +67,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ products, categories, onAddToCa
       </header>
 
 
-      
-              className="flex flex-col items-center gap-2 flex-shrink-0 group active:scale-95 transition-transform"
-            >
               <div className="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center text-primary group-hover:bg-primary/10 transition-colors shadow-sm overflow-hidden">
                 {cat.subCategories[0]?.image ? (
                   <img src={cat.subCategories[0].image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100" alt={cat.name} />
