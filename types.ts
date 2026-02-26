@@ -19,17 +19,16 @@ export interface User {
 }
 
 export interface Product {
-  id: string;
+  id: number;
   name: string;
   price: number;
-  originalPrice?: number;
   image: string;
   category: string;
-  subCategory?: string;
-  tag?: string;
-  soldCount?: string;
-  description?: string;
-  active?: string;
+  subCategory: string;
+  stock: number;
+  active: boolean;
+  shortDescription?: string;
+  fullDescription?: string;
 }
 
 export interface CartItem extends Product {
