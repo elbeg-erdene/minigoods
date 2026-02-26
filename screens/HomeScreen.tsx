@@ -66,13 +66,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ products, categories, onAddToCa
         </div>
       </header>
 
-      {/* Үндсэн Ангилал Хөндлөн Цэс */}
-      <div className="bg-white dark:bg-background-dark py-4 border-b border-gray-100 dark:border-white/5">
-        <div className="flex overflow-x-auto no-scrollbar gap-5 px-4">
-          {categories.map(cat => (
-            <button 
-              key={cat.id} 
-              onClick={() => onCategoryClick(cat)}
+
+      
               className="flex flex-col items-center gap-2 flex-shrink-0 group active:scale-95 transition-transform"
             >
               <div className="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center text-primary group-hover:bg-primary/10 transition-colors shadow-sm overflow-hidden">
