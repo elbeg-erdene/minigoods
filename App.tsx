@@ -30,9 +30,19 @@ const App: React.FC = () => {
 
   useEffect(() => {
     fetchProducts();
-    fetchCategories();
+   fetchCategories();
   }, []);
 
+const fetchCategories = async () => {
+  try {
+    const res = await fetch(API_URL + "?type=categories");
+    const data = await res.json();
+    setCategories(data);
+  } catch (error) {
+    console.error("Category fetch error:", error);
+  }
+};
+  
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
