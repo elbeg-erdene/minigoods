@@ -136,15 +136,15 @@ return <CheckoutScreen
 
     try {
 
-      const formData = new URLSearchParams();
-      formData.append("paymentMethod", data.paymentMethod);
-      formData.append("phoneNumber", data.phoneNumber);
-      formData.append("address", data.address);
-      formData.append("items", JSON.stringify(selItems));
+      const params = new URLSearchParams();
+      params.append("paymentMethod", data.paymentMethod);
+      params.append("phoneNumber", data.phoneNumber);
+      params.append("address", data.address);
+      params.append("items", JSON.stringify(selItems));
 
       const res = await fetch(API_URL, {
         method: "POST",
-        body: formData
+        body: params
       });
 
       const result = await res.json();
