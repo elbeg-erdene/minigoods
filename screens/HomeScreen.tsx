@@ -88,7 +88,16 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ products, categories, onAddToCa
         </div>
       </div>
 
-    
+     {/* Текст Таб Navigation */}
+      <nav className="sticky top-[116px] z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-white/5">
+        <div className="flex whitespace-nowrap px-4">
+          {categories.map((cat) => (
+            <button key={cat.id} onClick={() => setActiveCategory(cat.name)} className={`flex flex-col items-center justify-center border-b-[3px] px-4 py-3 transition-colors ${activeCategory === cat.name ? 'border-primary' : 'border-transparent'}`}>
+              <p className={`text-xs font-black uppercase tracking-wider ${activeCategory === cat.name ? 'text-primary' : 'text-gray-400'}`}>{cat.name}</p>
+            </button>
+          ))}
+        </div>
+      </nav>
 
       <div className="mt-4 px-4 grid grid-cols-2 gap-3">
         {filteredProducts.map(product => (
