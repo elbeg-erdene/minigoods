@@ -57,41 +57,34 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, userOrders, onNavig
 
 <div className="mt-4 space-y-4">
 
-  {userOrders.length === 0 ? (
-    <p className="text-sm text-gray-400 text-center">
+  {userOrders?.length === 0 ? (
+    <p>
       Захиалга байхгүй байна
     </p>
   ) : (
-    userOrders.map((order, index) => (
-      <div key={index} className="bg-white dark:bg-zinc-800 p-4 rounded-2xl shadow">
+    userOrders?.map((order, index) => (
+      <div key={index}>
+        
 
-        <p className="text-xs text-gray-500">
-          Огноо: {order.date}
+        <p> 
+          Огноо: {order?.date? new Date(order.date).toLocaleDateString() : ""}
         </p>
 
-        <p className="text-sm font-bold mt-1">
-          Төлбөр: {order.paymentMethod}
+        <p >
+          Төлбөр: {order?.paymentMethod}
         </p>
 
-        <p className="text-sm">
-          Хаяг: {order.address}
+        <p >
+          Хаяг: {order?.address}
         </p>
 
-        <p className="text-sm mt-2">
-          Бараа: {order.product} × {order.quantity}
+        <p>
+          Бараа: {order?.product} × {order?.quantity}
         </p>
+<p> Төлөв: {order?.status}</p>
+       
 
-        <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold ${
-          order.status === "pending"
-            ? "bg-yellow-100 text-yellow-700"
-            : "bg-green-100 text-green-700"
-        }`}>
-          {order.status === "pending"
-            ? "Хүлээгдэж байна"
-            : "Хүргэгдсэн"}
-        </span>
-
-      </div>
+   </div>
     ))
   )}
 
