@@ -82,7 +82,7 @@ const handleLogin = (phone: string) => {
   const newUser: User = { phone };
   setCurrentUser(newUser);
 
-  fetchOrders(phone);   // 👈 ЭНЭ ЧУХАЛ
+  fetchOrders(currentUser!.phone);   // 👈 ЭНЭ ЧУХАЛ
 
   setCurrentScreen(Screen.HOME);
   showToast("Амжилттай нэвтэрлээ!");
