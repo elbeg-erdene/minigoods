@@ -41,27 +41,38 @@ useEffect(()=> { if (categories.length > 0 && activeTabId===null) {setActiveTabI
         <section className="flex-1 overflow-y-auto bg-white dark:bg-background-dark p-4 pb-24">
           <div className="space-y-8">
             <div>
-              <div className="grid grid-cols-3 gap-y-6 gap-x-2">
-                {activeCategory?.subCategories?.map(sub => (
-                  <button 
-                    key={sub.id} 
-                    onClick={() => onSubCategoryClick(sub, activeCategory.name)}
-                    className="flex flex-col items-center gap-2 active:scale-95 transition-transform"
-                  >
-                    <div className="w-16 h-16 rounded-full overflow-hidden border border-gray-100 shadow-sm bg-gray-50 flex items-center justify-center">
-                      {sub.image ? (
-                        <img className="w-full h-full object-cover" src={sub.image} alt={sub.name} />
-                      ) : (
-                        <span className="material-symbols-outlined text-gray-300">category</span>
-                      )}
-                    </div>
-                    <span className="text-[10px] text-center font-bold leading-tight text-gray-700 dark:text-gray-300">{sub.name}</span>
-                  </button>
-                ))
-                ) : ( <p className="col-span-3 text-center text-sm text-gray-400">Дэд ангилал байхгүй байна</p> )
-                
-                }
-              </div>
+<div className="grid grid-cols-3 gap-y-6 gap-x-2">
+
+  {activeCategory?.subCategories?.length ? (
+
+    activeCategory.subCategories.map(sub => (
+      <button 
+        key={sub.id} 
+        onClick={() => onSubCategoryClick(sub, activeCategory.name)}
+        className="flex flex-col items-center gap-2 active:scale-95 transition-transform"
+      >
+        <div className="w-16 h-16 rounded-full overflow-hidden border border-gray-100 shadow-sm bg-gray-50 flex items-center justify-center">
+          {sub.image ? (
+            <img className="w-full h-full object-cover" src={sub.image} alt={sub.name} />
+          ) : (
+            <span className="material-symbols-outlined text-gray-300">category</span>
+          )}
+        </div>
+
+        <span className="text-[10px] text-center font-bold leading-tight text-gray-700 dark:text-gray-300">
+          {sub.name}
+        </span>
+      </button>
+    ))
+
+  ) : (
+    <p className="col-span-3 text-center text-sm text-gray-400">
+      Дэд ангилал байхгүй байна
+    </p>
+  )}
+
+</div>
+              
             </div>
           </div>
         </section>
