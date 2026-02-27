@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Screen, User, Order } from '../types';
+import { User, Order,Screen } from '../types';
 
 interface ProfileScreenProps {
   user: User | null;
@@ -54,6 +54,50 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, userOrders, onNavig
       <div className="mx-4 mt-4 mb-8">
         <div className="flex justify-between items-center mb-6 px-2">
           <h3 className="text-lg font-bold">Миний захиалгын түүх</h3>
+
+<div className="mt-4 space-y-4">
+
+  {userOrders.length === 0 ? (
+    <p className="text-sm text-gray-400 text-center">
+      Захиалга байхгүй байна
+    </p>
+  ) : (
+    userOrders.map((order, index) => (
+      <div key={index} className="bg-white dark:bg-zinc-800 p-4 rounded-2xl shadow">
+
+        <p className="text-xs text-gray-500">
+          Огноо: {order.date}
+        </p>
+
+        <p className="text-sm font-bold mt-1">
+          Төлбөр: {order.paymentMethod}
+        </p>
+
+        <p className="text-sm">
+          Хаяг: {order.address}
+        </p>
+
+        <p className="text-sm mt-2">
+          Бараа: {order.product} × {order.quantity}
+        </p>
+
+        <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold ${
+          order.status === "pending"
+            ? "bg-yellow-100 text-yellow-700"
+            : "bg-green-100 text-green-700"
+        }`}>
+          {order.status === "pending"
+            ? "Хүлээгдэж байна"
+            : "Хүргэгдсэн"}
+        </span>
+
+      </div>
+    ))
+  )}
+
+</div>
+
+          
           <span className="text-[10px] bg-gray-100 dark:bg-white/5 px-3 py-1 rounded-full font-bold text-gray-500">
             {userOrders.length} захиалга
           </span>
