@@ -12,7 +12,7 @@ interface CategoriesScreenProps {
 
 const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ products, categories, onAddToCart, onProductClick, onSubCategoryClick }) => {
   const [activeTabId, setActiveTabId] = useState<number | null>(null);
-useEffect(()=> { if (categories.length > 0 && activeTabld===null) {setActiveTabld(categories[0].id);} },[categories]);
+useEffect(()=> { if (categories.length > 0 && activeTabId===null) {setActiveTabId(categories[0].id);} },[categories]);
   
   const activeCategory = categories.find(c => c.id === activeTabId);
 
