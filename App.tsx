@@ -197,8 +197,20 @@ case Screen.CHECKOUT:
   );
 
 
-     case Screen.PROFILE:
-        return <ProfileScreen user={currentUser} userOrders={orders.filter(o => o.phone === currentUser?.phone)}    onNavigate={setCurrentScreen} onLogout={() => { setCurrentUser(null); setCurrentScreen(Screen.LOGIN); }} />;
+    case Screen.PROFILE:
+  return (
+    <ProfileScreen
+      user={currentUser}
+      userOrders={orders}   // 👈 filter энд хийх шаардлагагүй
+      onNavigate={setCurrentScreen}
+      onLogout={() => {
+        setCurrentUser(null);
+        setOrders([]);
+        setCurrentScreen(Screen.LOGIN);
+      }}
+    />
+  );
+
       default:
         return <HomeScreen products={products} categories={categories} onAddToCart={addToCart} onProductClick={handleProductClick} onCategoryClick={handleMainCategoryClick} />;
     }
