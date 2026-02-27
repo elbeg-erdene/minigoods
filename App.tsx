@@ -42,6 +42,18 @@ const fetchCategories = async () => {
     console.error("Category fetch error:", error);
   }
 };
+
+const fetchOrders = async (phone: string) => {
+  try {
+    const res = await fetch(`${API_URL}?type=orders&phone=${phone}`);
+    const data = await res.json();
+    setOrders(data);
+  } catch (err) {
+    console.error("Order fetch error:", err);
+  }
+};
+
+
   
   const fetchProducts = async () => {
     try {
@@ -66,9 +78,14 @@ const fetchCategories = async () => {
   };
 
 const handleLogin = (phone: string) => {
-  setCurrentUser({ phone });
+
+  const newUser: User = { phone };
+  setCurrentUser(newUser);
+
+  fetchOrders(phone);   // 👈 ЭНЭ ЧУХАЛ
+
   setCurrentScreen(Screen.HOME);
-  showToast(`${phone} амжилттай нэвтэрлээ!`);
+  showToast("Амжилттай нэвтэрлээ!");
 };
 
   const handleProductClick = (product: Product) => {
