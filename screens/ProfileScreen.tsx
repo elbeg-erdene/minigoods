@@ -40,12 +40,15 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, userOrders, onNavig
             USER
           </div>
         </div>
-        <div className="flex flex-col">
-          <h1 className="text-lg font-bold tracking-tight truncate max-w-[200px]">{user?.email || 'Хэрэглэгч'}</h1>
-          <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium mt-1">
-            Гишүүн болсон: {user?.joinedAt.split(',')[0]}
-          </p>
-        </div>
+
+<div className="flex flex-col">
+  <h1 className="text-lg font-bold tracking-tight truncate max-w-[200px]">
+    {user?.phone || 'Хэрэглэгч'}
+  </h1>
+  <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium mt-1">
+    Утас: {user?.phone}
+  </p>
+</div>
       </div>
 
       <div className="mx-4 mt-4 mb-8">
