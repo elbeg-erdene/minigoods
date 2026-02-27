@@ -12,9 +12,9 @@ interface CategoriesScreenProps {
 
 const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ products, categories, onAddToCart, onProductClick, onSubCategoryClick }) => {
   const [activeTabId, setActiveTabId] = useState<number | null>(null);
-useEffect(()=> { if (categories.length > 0 && activeTabId===null) {setActiveTabId(categories[0].id);} },[categories]);
+useEffect(()=> { if (categories.length > 0 && activeTabId===null) {setActiveTabId(Number(categories[0].id));} },[categories,activeTabId]);
   
-  const activeCategory = categories.find(c => c.id === activeTabId);
+  const activeCategory = categories.find(c => Number(c.id) === Number(activeTabId));
 
   return (
     <div className="flex flex-col h-screen overflow-hidden animate-in fade-in duration-500">
@@ -42,7 +42,7 @@ useEffect(()=> { if (categories.length > 0 && activeTabId===null) {setActiveTabI
           <div className="space-y-8">
             <div>
               <div className="grid grid-cols-3 gap-y-6 gap-x-2">
-                {activeCategory?.subCategories.map(sub => (
+                {activeCategory?.subCategories?.map(sub => (
                   <button 
                     key={sub.id} 
                     onClick={() => onSubCategoryClick(sub, activeCategory.name)}
@@ -57,7 +57,10 @@ useEffect(()=> { if (categories.length > 0 && activeTabId===null) {setActiveTabI
                     </div>
                     <span className="text-[10px] text-center font-bold leading-tight text-gray-700 dark:text-gray-300">{sub.name}</span>
                   </button>
-                ))}
+                ))
+                ) : ( <p className="col-span-3 text-center text-sm text-gray-400">Дэд ангилал байхгүй байна</p> )
+                
+                }
               </div>
             </div>
           </div>
