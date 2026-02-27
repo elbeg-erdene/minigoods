@@ -102,14 +102,7 @@ useEffect(() => {
         ))}
       </div>
 <div className="mt-6 px-4">
-  {visibleCount < shuffledProducts.length && (
-    <button
-      onClick={loadMore}
-      className="w-full py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-md active:scale-95 transition"
-    >
-      View More
-    </button>
-  )}
+ 
 </div>
       
       {visibleCount < shuffledProducts.length && (
@@ -118,7 +111,7 @@ useEffect(() => {
       onClick={loadMore}
       className="px-6 py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-md active:scale-95 transition"
     >
-      View More
+      илүү их үзэх
     </button>
   </div>
 )}
