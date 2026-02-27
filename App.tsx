@@ -13,7 +13,7 @@ import SubCategoryProductsScreen from './screens/SubCategoryProductsScreen';
 import CategoryProductsScreen from './screens/CategoryProductsScreen';
 import BottomNav from './components/BottomNav';
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbxbd3TIna8r2VPfFbxnRl5gO3NGUmbqkxE_zsWMYfUfH36XFzL03P7fKPDwblW0_xX8/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyRT262PYBLiwAGBkWcx4W8CVQKoE8mh53Encq5pF_ufoiNUEwwRgKliMeBeVHn2kKf/exec';
 
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>(Screen.LOGIN);
@@ -65,12 +65,11 @@ const fetchCategories = async () => {
     setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
   };
 
-  const handleLogin = (email: string) => {
-    const newUser: User = { email, joinedAt: new Date().toLocaleString() };
-    setCurrentUser(newUser);
-    setCurrentScreen(Screen.HOME);
-    showToast(`${email} амжилттай нэвтэрлээ!`);
-  };
+const handleLogin = (phone: string) => {
+  setCurrentUser({ phone });
+  setCurrentScreen(Screen.HOME);
+  showToast(`${phone} амжилттай нэвтэрлээ!`);
+};
 
   const handleProductClick = (product: Product) => {
     setSelectedProduct(product);
@@ -136,58 +135,53 @@ const fetchCategories = async () => {
         return selectedProduct ? <ProductDetailScreen product={selectedProduct} onBack={() => setCurrentScreen(Screen.HOME)} onAddToCart={addToCart} onBuyNow={handleBuyNow} /> : null;
       case Screen.CART:
         return <CartScreen cart={cart} onUpdateQuantity={(id, d) => setCart(prev => prev.map(i => i.id === id ? {...i, quantity: Math.max(1, i.quantity + d)} : i))} onToggleSelection={id => setCart(prev => prev.map(i => i.id === id ? {...i, selected: !i.selected} : i))} onToggleAll={s => setCart(prev => prev.map(i => ({...i, selected: s})))} onRemoveItem={id => setCart(prev => prev.filter(i => i.id !== id))} onCheckout={() => setCurrentScreen(Screen.CHECKOUT)} />;
-    case Screen.CHECKOUT:
+case Screen.CHECKOUT:
   const selItems = cart.filter(i => i.selected);
   const total = selItems.reduce((acc, i) => acc + (i.price * i.quantity), 0);
 
-return <CheckoutScreen 
-  items={selItems} 
-  totalAmount={total} 
-  onConfirm={async (data) => {
+  return (
+    <CheckoutScreen 
+      items={selItems}
+      totalAmount={total}
+      onConfirm={async (data) => {
+        try {
 
-    try {
+          const params = new URLSearchParams();
+          params.append("action", "order");
+          params.append("phone", currentUser!.phone);
+          params.append("paymentMethod", data.paymentMethod);
+          params.append("address", data.address);
+          params.append("items", JSON.stringify(selItems));
 
-      const params = new URLSearchParams();
-      params.append("paymentMethod", data.paymentMethod);
-      params.append("phoneNumber", data.phoneNumber);
-      params.append("address", data.address);
-      params.append("items", JSON.stringify(selItems));
+          const res = await fetch(API_URL, {
+            method: "POST",
+            body: params
+          });
 
-      const res = await fetch(API_URL, {
-        method: "POST",
-        body: params
-      });
+          const result = await res.json();
 
-      const result = await res.json();
+          if (result.status === "ok") {
 
-      if (result.status === "ok") {
+            setCart([]);
+            setCurrentScreen(Screen.HOME);
+            showToast("Захиалга баталгаажлаа!");
 
-        const newOrder: Order = { 
-          ...data, 
-          id: `ORD-${Date.now()}`, 
-          userEmail: currentUser!.email, 
-          createdAt: new Date().toLocaleString() 
-        };
+          } else {
+            showToast("Sheet рүү илгээхэд алдаа гарлаа");
+          }
 
-        setOrders(prev => [newOrder, ...prev]);
-        setCart([]);
-        setCurrentScreen(Screen.HOME);
-        showToast("Захиалга баталгаажлаа!");
+        } catch (error) {
+          console.error(error);
+          showToast("Сервертэй холбогдож чадсангүй");
+        }
+      }}
+      onBack={() => setCurrentScreen(Screen.CART)}
+    />
+  );
 
-      } else {
-        showToast("Sheet рүү илгээхэд алдаа гарлаа");
-      }
 
-    } catch (error) {
-      console.error(error);
-      showToast("Сервертэй холбогдож чадсангүй");
-    }
-
-  }} 
-  onBack={() => setCurrentScreen(Screen.CART)} 
-/>;
-      case Screen.PROFILE:
-        return <ProfileScreen user={currentUser} userOrders={orders.filter(o => o.userEmail === currentUser?.email)} onNavigate={setCurrentScreen} onLogout={() => { setCurrentUser(null); setCurrentScreen(Screen.LOGIN); }} />;
+     case Screen.PROFILE:
+        return <ProfileScreen user={currentUser} userOrders={orders.filter(o => o.phone === currentUser?.phone)}    onNavigate={setCurrentScreen} onLogout={() => { setCurrentUser(null); setCurrentScreen(Screen.LOGIN); }} />;
       default:
         return <HomeScreen products={products} categories={categories} onAddToCart={addToCart} onProductClick={handleProductClick} onCategoryClick={handleMainCategoryClick} />;
     }
@@ -204,4 +198,6 @@ return <CheckoutScreen
   );
 };
 
-export default App;
+export default App;     
+        
+     
