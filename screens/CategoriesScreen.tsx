@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Product, Category, SubCategory } from '../types';
 
 interface CategoriesScreenProps {
