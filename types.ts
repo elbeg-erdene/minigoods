@@ -1,4 +1,3 @@
-
 export enum Screen {
   LOGIN = 'login',
   HOME = 'home',
@@ -11,11 +10,9 @@ export enum Screen {
   CATEGORY_PRODUCTS = 'category_products'
 }
 
+// 🔥 PHONE BASED USER
 export interface User {
-  email: string;
-  name?: string;
-  avatar?: string;
-  joinedAt: string;
+  phone: string;
 }
 
 export interface Product {
@@ -37,19 +34,19 @@ export interface CartItem extends Product {
   variant?: string;
 }
 
+// 🔥 ORDER STRUCTURE (Sheet-тэй таарах)
 export interface Order {
-  id: string;
-  userEmail: string;
   phone: string;
+  paymentMethod: string;
   address: string;
-  paymentMethod: 'delivery' | 'bank';
-  items: CartItem[];
-  totalAmount: number;
-  createdAt: string;
+  product: string;
+  quantity: number;
+  date: string;
+  status: string;
 }
 
 export interface SubCategory {
-  id: string;
+  id?: string;
   name: string;
   image: string;
   isNew?: boolean;
