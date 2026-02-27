@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { CartItem, Order } from '../types';
+import { CartItem } from '../types';
 
 interface CheckoutScreenProps {
   items: CartItem[];
   totalAmount: number;
-  onConfirm: (order: Omit<Order, 'id' | 'createdAt' | 'userEmail'>) => void;
+  onConfirm: (data: {
+    paymentMethod: string;
+    address: string;
+  }) => void;
   onBack: () => void;
 }
 
@@ -16,26 +19,22 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
 }) => {
 
   const [paymentMethod, setPaymentMethod] = useState<'delivery' | 'bank'>('delivery');
-  const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!phone || !address) {
-      alert("Мэдээллээ бүрэн оруулна уу.");
+    if (!address) {
+      alert("Хүргэлтийн хаягаа оруулна уу.");
       return;
     }
 
     onConfirm({
       paymentMethod:
         paymentMethod === 'delivery'
-          ? "бараан хүлээн авахдаа төлөх"
+          ? "бараа хүлээн авахдаа төлөх"
           : "банкны дансаар төлөх",
-      phoneNumber: phone,
-      address,
-      items,
-      totalAmount
+      address
     });
   };
 
@@ -91,7 +90,7 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
           {paymentMethod === 'bank' && (
             <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-2xl">
               <p className="text-xs font-bold text-primary">
-                Khan Bank: 575901576 <br />
+                Khan Bank: 5759015746 <br />
                 Хүлээн авагч: Х.Элбэг-Эрдэнэ
               </p>
             </div>
@@ -104,25 +103,14 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
             Хүргэлтийн мэдээлэл
           </h2>
 
-          <div className="space-y-4">
-            <input
-              required
-              type="tel"
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
-              placeholder="Хүлээн авах утасны дугаар"
-              className="w-full bg-gray-50 dark:bg-black/20 rounded-xl text-sm p-4 focus:ring-2 focus:ring-primary/30"
-            />
-
-            <textarea
-              required
-              rows={4}
-              value={address}
-              onChange={e => setAddress(e.target.value)}
-              placeholder="Хүргэлтийн хаяг"
-              className="w-full bg-gray-50 dark:bg-black/20 rounded-xl text-sm p-4 focus:ring-2 focus:ring-primary/30 resize-none"
-            />
-          </div>
+          <textarea
+            required
+            rows={4}
+            value={address}
+            onChange={e => setAddress(e.target.value)}
+            placeholder="Хүргэлтийн хаяг"
+            className="w-full bg-gray-50 dark:bg-black/20 rounded-xl text-sm p-4 focus:ring-2 focus:ring-primary/30 resize-none"
+          />
         </section>
 
         {/* Summary */}
