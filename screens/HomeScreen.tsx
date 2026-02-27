@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo,useEffect } from 'react';
 import { Product, Category } from '../types';
 
 interface HomeScreenProps {
@@ -41,7 +41,7 @@ const ProductCard: React.FC<{ product: Product; onAddToCart: (p: Product) => voi
 const HomeScreen: React.FC<HomeScreenProps> = ({ products, categories, onAddToCart, onProductClick, onCategoryClick }) => {
   const [activeCategory, setActiveCategory] = useState(categories[0]?.name || '');
   const [searchQuery, setSearchQuery] = useState('');
-
+const [visibleCount, setVisibleCount] = useState(12);
   const filteredProducts = useMemo(() => {
     return products.filter(p => {
       const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -50,6 +50,24 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ products, categories, onAddToCa
     });
   }, [searchQuery, products, activeCategory]);
 
+  
+ const shuffledProducts = useMemo(() => {
+  const arr = [...filteredProducts];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}, [filteredProducts]);
+
+
+  
+const loadMore = () => {
+  setVisibleCount(prev => prev + 12);
+};
+useEffect(() => {
+  setVisibleCount(12);
+}, [activeCategory, searchQuery]);  
   return (
     <div className="animate-in fade-in duration-500 min-h-screen pb-20">
       <header className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 space-y-4 shadow-sm">
@@ -79,10 +97,31 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ products, categories, onAddToCa
       </nav>
 
       <div className="mt-4 px-4 grid grid-cols-2 gap-3">
-        {filteredProducts.map(product => (
+   {shuffledProducts.slice(0, visibleCount).map(product => (    
           <ProductCard key={product.id} product={product} onAddToCart={onAddToCart} onClick={() => onProductClick(product)} />
         ))}
       </div>
+<div className="mt-6 px-4">
+  {visibleCount < shuffledProducts.length && (
+    <button
+      onClick={loadMore}
+      className="w-full py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-md active:scale-95 transition"
+    >
+      View More
+    </button>
+  )}
+</div>
+      
+      {visibleCount < shuffledProducts.length && (
+  <div className="flex justify-center mt-6">
+    <button
+      onClick={loadMore}
+      className="px-6 py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-md active:scale-95 transition"
+    >
+      View More
+    </button>
+  </div>
+)}
     </div>
   );
 };
