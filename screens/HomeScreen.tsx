@@ -102,9 +102,8 @@ useEffect(() => {
         ))}
       </div>
 <div className="mt-6 px-4">
- 
-</div>
-      
+
+   </div>   
       {visibleCount < shuffledProducts.length && (
   <div className="flex justify-center mt-6">
     <button
