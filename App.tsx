@@ -81,21 +81,9 @@ const fetchOrders = async (phone: string) => {
 const handleLogin = async (phone: string) => {
 
   try {
-
-    const params = new URLSearchParams();
-    params.append("action", "login");
-    params.append("phone", phone);
-
-    const res = await fetch(API_URL, {
-      method: "POST",
-      body: params
-    });
-
-    const result = await res.json();
-
-    if (result.status === "ok") {
-
-      const newUser = { phone };
+     setIsLoading(true)
+    
+      const newUser: User  = { phone };
       setCurrentUser(newUser);
 
       await fetchOrders(phone);   // 👈 orders бүрэн татагдсаны дараа
@@ -103,14 +91,11 @@ const handleLogin = async (phone: string) => {
       setCurrentScreen(Screen.HOME);
       showToast("Амжилттай нэвтэрлээ!");
 
-    } else {
-      showToast("Login амжилтгүй");
-    }
-
   } catch (err) {
     console.error(err);
     showToast("Сервертэй холбогдож чадсангүй");
-  }
+  } finally{ 
+    setIsLoading(false);}
 };
 
   const handleProductClick = (product: Product) => {
