@@ -4,27 +4,25 @@ interface LoginScreenProps {
   onLogin: (phone: string) => void;
 }
 
-const API_URL = "https://script.google.com/macros/s/AKfycbybRv2ykeON_Hv7kntLMRnSuZwMWe8YHf61gLtQF2IYqEgG-G0IS77lebNCB1TLtreH/exec"; // ← энд Apps Script URL-аа тавина
+const API_URL = "https://script.google.com/macros/s/AKfycbybRv2ykeON_Hv7kntLMRnSuZwMWe8YHf61gLtQF2IYqEgG-G0IS77lebNCB1TLtreH/exec";
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  if (!phone || phone.length < 8) {
-    alert("Зөв утасны дугаар оруулна уу.");
-    return;
-  }
+    const cleanPhone = phone.replace(/\s+/g, '');
 
-  try {
-    setLoading(true);
-    await onLogin(phone);   // 👈 phone дамжуулж байна
-  } finally {
-    setLoading(false);
-  }
-};
+    if (!cleanPhone || cleanPhone.length < 8) {
+      alert("Зөв утасны дугаар оруулна уу.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
       const formData = new URLSearchParams();
       formData.append("action", "login");
       formData.append("phone", cleanPhone);
@@ -53,7 +51,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
       <div className="z-10 w-full text-center space-y-10">
 
         <div className="flex flex-col items-center">
-          <div className="w-20 h-20 bg-primary rounded-3xl shadow-2xl shadow-primary/40 flex items-center justify-center mb-6 rotate-12 transition-transform hover:rotate-0 duration-500">
+          <div className="w-20 h-20 bg-primary rounded-3xl shadow-2xl shadow-primary/40 flex items-center justify-center mb-6">
             <span className="material-symbols-outlined text-white text-4xl filled-icon">
               shopping_bag
             </span>
@@ -66,7 +64,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 animate-in slide-in-from-bottom-4 duration-300">
+        <form onSubmit={handleSubmit} className="space-y-4">
 
           <div className="text-left">
             <h2 className="text-lg font-bold text-gray-700 dark:text-gray-200 mb-4">
@@ -93,7 +91,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-14 bg-primary text-white font-bold rounded-2xl text-sm shadow-xl shadow-primary/30 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+            className="w-full h-14 bg-primary text-white font-bold rounded-2xl text-sm shadow-xl shadow-primary/30 active:scale-95 transition-all disabled:opacity-60"
           >
             {loading ? "Нэвтэрч байна..." : "Нэвтрэх"}
           </button>
