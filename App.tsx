@@ -81,7 +81,7 @@ const fetchOrders = async (phone: string) => {
 const handleLogin = async (phone: string) => {
 
   try {
-     setIsLoading(true)
+     setIsLoading(true);
     
       const newUser: User  = { phone };
       setCurrentUser(newUser);
