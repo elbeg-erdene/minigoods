@@ -28,24 +28,44 @@ const App: React.FC = () => {
   const [toast, setToast] = useState<{ message: string; show: boolean }>({ message: '', show: false });
   const [isLoading, setIsLoading] = useState(true);
 
-useEffect(() => {
 
+// 1️⃣ App load үед ажиллах (1 удаа)
+useEffect(() => {
   const savedUser = localStorage.getItem("minigoods_user");
 
   if (savedUser) {
     const parsedUser = JSON.parse(savedUser);
-
     setCurrentUser(parsedUser);
     setCurrentScreen(Screen.HOME);
     fetchOrders(parsedUser.phone);
   }
 
+  fetchProducts();
+  fetchCategories();
 }, []);
-    
-     fetchProducts();
-     fetchCategories();
-     fetch(API_URL); 
-  }, []);
+
+
+// 2️⃣ User өөрчлөгдөх үед cart restore
+useEffect(() => {
+  if (currentUser) {
+    const savedCart = localStorage.getItem(`cart_${currentUser.phone}`);
+
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }
+}, [currentUser]);
+
+
+// 3️⃣ Cart өөрчлөгдөх үед хадгалах
+useEffect(() => {
+  if (currentUser) {
+    localStorage.setItem(
+      `cart_${currentUser.phone}`,
+      JSON.stringify(cart)
+    );
+  }
+}, [cart, currentUser]);
 
 const fetchCategories = async () => {
   try {
@@ -227,11 +247,21 @@ case Screen.CHECKOUT:
       user={currentUser}
       userOrders={orders}   // 👈 filter энд хийх шаардлагагүй
       onNavigate={setCurrentScreen}
-      onLogout={() => {
-        setCurrentUser(null);
-        setOrders([]);
-        setCurrentScreen(Screen.LOGIN);
-      }}
+    onLogout={() => {
+
+  // 🔥 LocalStorage цэвэрлэнэ
+  localStorage.removeItem("minigoods_user");
+
+  if (currentUser) {
+    localStorage.removeItem(`cart_${currentUser.phone}`);
+  }
+
+  setCurrentUser(null);
+  setOrders([]);
+  setCart([]);
+  setCurrentScreen(Screen.LOGIN);
+
+}}
     />
   );
 
