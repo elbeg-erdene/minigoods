@@ -93,7 +93,7 @@ const handleLogin = async (phone: string) => {
 
   } catch (err) {
     console.error(err);
-    showToast("Сервертэй холбогдож чадсангүй");
+   
   } finally{ 
     setIsLoading(false);}
 };
