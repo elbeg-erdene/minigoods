@@ -154,7 +154,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ cart, onUpdateQuantity, onToggl
           <span className="material-symbols-outlined text-[#1c110d] dark:text-white cursor-pointer hover:text-primary">arrow_back_ios</span>
           <h1 className="text-lg font-bold tracking-tight">Сагс ({cart.length})</h1>
         </div>
-        <button className="text-primary font-bold text-sm hover:underline">Засах</button>
+        
       </header>
 
       <div className="flex flex-col divide-y divide-[#f4eae7] dark:divide-white/5">
