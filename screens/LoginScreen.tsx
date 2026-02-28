@@ -10,19 +10,21 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    const cleanPhone = phone.replace(/\D/g, '');
+  if (!phone || phone.length < 8) {
+    alert("Зөв утасны дугаар оруулна уу.");
+    return;
+  }
 
-    if (cleanPhone.length < 8) {
-      alert("Зөв утасны дугаар оруулна уу.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
+  try {
+    setLoading(true);
+    await onLogin(phone);   // 👈 phone дамжуулж байна
+  } finally {
+    setLoading(false);
+  }
+};
       const formData = new URLSearchParams();
       formData.append("action", "login");
       formData.append("phone", cleanPhone);
@@ -82,7 +84,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                 type="tel"
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
-                placeholder="99112233"
+                placeholder="Утасны дугаараа оруулна уу"
                 className="w-full h-14 bg-white dark:bg-[#1a2a1f] border border-gray-100 dark:border-white/5 rounded-2xl pl-12 pr-6 text-sm font-bold focus:ring-2 focus:ring-primary/50 transition-all shadow-inner"
               />
             </div>
@@ -93,7 +95,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
             disabled={loading}
             className="w-full h-14 bg-primary text-white font-bold rounded-2xl text-sm shadow-xl shadow-primary/30 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-60"
           >
-            {loading ? "Түр хүлээнэ үү..." : "Нэвтрэх"}
+            {loading ? "Нэвтэрч байна..." : "Нэвтрэх"}
           </button>
 
         </form>
