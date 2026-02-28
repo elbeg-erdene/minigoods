@@ -29,8 +29,9 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchProducts();
-   fetchCategories();
+     fetchProducts();
+     fetchCategories();
+     fetch(API_URL); 
   }, []);
 
 const fetchCategories = async () => {
@@ -77,15 +78,39 @@ const fetchOrders = async (phone: string) => {
     setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
   };
 
-const handleLogin = (phone: string) => {
+const handleLogin = async (phone: string) => {
 
-  const newUser: User = { phone };
-  setCurrentUser(newUser);
+  try {
 
-  fetchOrders(currentUser!.phone);   // 👈 ЭНЭ ЧУХАЛ
+    const params = new URLSearchParams();
+    params.append("action", "login");
+    params.append("phone", phone);
 
-  setCurrentScreen(Screen.HOME);
-  showToast("Амжилттай нэвтэрлээ!");
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: params
+    });
+
+    const result = await res.json();
+
+    if (result.status === "ok") {
+
+      const newUser = { phone };
+      setCurrentUser(newUser);
+
+      await fetchOrders(phone);   // 👈 orders бүрэн татагдсаны дараа
+
+      setCurrentScreen(Screen.HOME);
+      showToast("Амжилттай нэвтэрлээ!");
+
+    } else {
+      showToast("Login амжилтгүй");
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast("Сервертэй холбогдож чадсангүй");
+  }
 };
 
   const handleProductClick = (product: Product) => {
