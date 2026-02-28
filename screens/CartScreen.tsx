@@ -92,7 +92,7 @@ const CartItemRow: React.FC<CartItemComponentProps> = ({ item, onUpdateQuantity,
           <input 
             checked={item.selected} 
             onChange={() => onToggleSelection(item.id)}
-            className="h-5 w-5 rounded-full border-2 border-primary/30 bg-transparent text-primary focus:ring-primary focus:ring-offset-0 transition-all cursor-pointer" 
+            className="h-5 w-5 rounded-full border-2 border-green-500 bg-transparent text-green-600 focus:ring-green-500 focus:ring-offset-0 transition-all cursor-pointer" 
             type="checkbox"
           />
         </div>
@@ -182,7 +182,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ cart, onUpdateQuantity, onToggl
             <input 
               checked={allSelected}
               onChange={(e) => onToggleAll(e.target.checked)}
-              className="h-5 w-5 rounded-full border-2 border-primary/30 bg-transparent text-primary focus:ring-primary focus:ring-offset-0 transition-all" 
+              className="h-5 w-5 rounded-full border-2 border-green-500 bg-transparent text-green-600 focus:ring-green-500 focus:ring-offset-0 transition-all cursor-pointer" 
               type="checkbox"
             />
             <span className="text-xs font-bold text-[#1c110d] dark:text-white uppercase tracking-wider group-hover:text-primary transition-colors">Бүгдийг сонгох</span>
