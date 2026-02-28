@@ -28,7 +28,20 @@ const App: React.FC = () => {
   const [toast, setToast] = useState<{ message: string; show: boolean }>({ message: '', show: false });
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+useEffect(() => {
+
+  const savedUser = localStorage.getItem("minigoods_user");
+
+  if (savedUser) {
+    const parsedUser = JSON.parse(savedUser);
+
+    setCurrentUser(parsedUser);
+    setCurrentScreen(Screen.HOME);
+    fetchOrders(parsedUser.phone);
+  }
+
+}, []);
+    
      fetchProducts();
      fetchCategories();
      fetch(API_URL); 
@@ -85,6 +98,7 @@ const handleLogin = async (phone: string) => {
     
       const newUser: User  = { phone };
       setCurrentUser(newUser);
+localStorage.setItem("minigoods_user", JSON.stringify(newUser));
 
       await fetchOrders(phone);   // 👈 orders бүрэн татагдсаны дараа
 
