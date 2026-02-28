@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 interface LoginScreenProps {
-  onLogin: (phone: string) => void;
+  onLogin: (phone: string) => Promise <void>;
 }
 
 const API_URL = "https://script.google.com/macros/s/AKfycbybRv2ykeON_Hv7kntLMRnSuZwMWe8YHf61gLtQF2IYqEgG-G0IS77lebNCB1TLtreH/exec";
@@ -26,13 +26,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
       const formData = new URLSearchParams();
       formData.append("action", "login");
       formData.append("phone", cleanPhone);
-
+const response = 
       await fetch(API_URL, {
         method: "POST",
         body: formData
       });
-      if(!response.ok) { throw new Error("Login failed");}
-
+      if(!response.ok) { throw new Error("Network response not ok");}
+const result = await response.json();
+      if(result.status !=="ok") {throw new Error("Login failed");}
      await onLogin(cleanPhone);
 
     } catch (error) {
