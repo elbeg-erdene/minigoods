@@ -31,8 +31,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
         method: "POST",
         body: formData
       });
+      if(!response.ok) { throw new Error("Login failed");}
 
-      onLogin(cleanPhone);
+     await onLogin(cleanPhone);
 
     } catch (error) {
       console.error(error);
