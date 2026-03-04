@@ -40,8 +40,8 @@ useEffect(() => {
     setCurrentScreen(Screen.HOME);
    await Promise.all ([
   
-  fetchProducts();
-  fetchCategories();
+  fetchProducts(),
+  fetchCategories(),
     fetchOrders(parsedUser.phone) ]);
   } else { await Promise.all([
     fetchProducts(), fetchCategories() ]);
