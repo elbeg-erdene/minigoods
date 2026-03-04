@@ -31,18 +31,21 @@ const App: React.FC = () => {
 
 // 1️⃣ App load үед ажиллах (1 удаа)
 useEffect(() => {
+  const initApp = async () => {
   const savedUser = localStorage.getItem("minigoods_user");
 
   if (savedUser) {
     const parsedUser = JSON.parse(savedUser);
     setCurrentUser(parsedUser);
     setCurrentScreen(Screen.HOME);
-    fetchOrders(parsedUser.phone);
-  }
-
+   await Promise.all ([
+  
   fetchProducts();
   fetchCategories();
-}, []);
+    fetchOrders(parsedUser.phone) ]);
+  } else { await Promise.all([
+    fetchProducts(), fetchCategories() ]);
+},}; initApp(); }, []);
 
 
 // 2️⃣ User өөрчлөгдөх үед cart restore
