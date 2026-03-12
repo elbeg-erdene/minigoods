@@ -87,44 +87,91 @@ useEffect(() => {
 }, [cart, currentUser]);
 
 const fetchCategories = async () => {
+
   try {
+
+    const cached = localStorage.getItem("categories");
+
+    if (cached) {
+      setCategories(JSON.parse(cached));
+    }
+
     const res = await fetch(API_URL + "?type=categories");
     const data = await res.json();
+
     setCategories(data);
+
+    localStorage.setItem("categories", JSON.stringify(data));
+
   } catch (error) {
+
     console.error("Category fetch error:", error);
+
   }
+
 };
+  
 
 const fetchOrders = async (phone: string) => {
+
   try {
+
+    const cacheKey = `orders_${phone}`;
+
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+      setOrders(JSON.parse(cached));
+    }
+
     const res = await fetch(`${API_URL}?type=orders&phone=${phone}`);
     const data = await res.json();
+
     setOrders(data);
+
+    localStorage.setItem(cacheKey, JSON.stringify(data));
+
   } catch (err) {
+
     console.error("Order fetch error:", err);
+
   }
+
 };
-
-
   
   const fetchProducts = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(API_URL);
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        const activeProducts = data.filter((p: any) => p.active === true);
-        setProducts(activeProducts);
-      }
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      showToast('Бараа татахад алдаа гарлаа');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
+  try {
+
+    const cached = localStorage.getItem("products");
+
+    // ⚡ эхлээд cache харуулна
+    if (cached) {
+      setProducts(JSON.parse(cached));
+    }
+
+    // background update
+    const response = await fetch(API_URL);
+    const data = await response.json();
+
+    if (Array.isArray(data)) {
+
+      const activeProducts = data.filter((p: any) => p.active === true);
+
+      setProducts(activeProducts);
+
+      // cache update
+      localStorage.setItem("products", JSON.stringify(activeProducts));
+    }
+
+  } catch (error) {
+
+    console.error("Product fetch error:", error);
+
+  }
+
+};
+ 
   const showToast = (message: string) => {
     setToast({ message, show: true });
     setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
