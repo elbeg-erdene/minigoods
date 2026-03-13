@@ -1,9 +1,3 @@
-<button onClick={onBack}>
-  <span className="material-symbols-outlined">
-    arrow_back
-  </span>
-</button>
-
 
 import React, { useState, useRef, useEffect } from 'react';
 import { CartItem } from '../types';
@@ -159,7 +153,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ cart, onUpdateQuantity, onToggl
     <div className="flex flex-col animate-in fade-in slide-in-from-bottom-2 duration-500">
       <header className="sticky top-0 z-20 bg-white/90 dark:bg-background-dark/90 backdrop-blur-md px-4 py-4 flex items-center justify-between border-b border-[#e8d5ce]/30">
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[#1c110d] dark:text-white cursor-pointer hover:text-primary">arrow_back_ios</span>
+         
           <h1 className="text-lg font-bold tracking-tight">Сагс ({cart.length})</h1>
         </div>
         
