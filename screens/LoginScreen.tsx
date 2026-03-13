@@ -34,7 +34,7 @@ const response =
       if(!response.ok) { throw new Error("Network response not ok");}
 const result = await response.json();
       if(result.status !=="ok") {throw new Error("Login failed");}
-     await onLogin(cleanPhone);
+     onLogin(cleanPhone);
 
     } catch (error) {
       console.error(error);
