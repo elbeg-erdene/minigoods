@@ -60,11 +60,26 @@ const [visibleCount, setVisibleCount] = useState(12);
   return arr;
 }, [filteredProducts]);
 
+useEffect(() => {
 
+  const handleScroll = () => {
+
+    const scrollTop = window.scrollY;
+    const windowHeight = window.innerHeight;
+    const fullHeight = document.body.offsetHeight;
+
+    if (scrollTop + windowHeight >= fullHeight - 200) {
+      setVisibleCount(prev => prev + 12);
+    }
+
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => window.removeEventListener("scroll", handleScroll);
+
+}, []);
   
-const loadMore = () => {
-  setVisibleCount(prev => prev + 12);
-};
 useEffect(() => {
   setVisibleCount(12);
 }, [activeCategory, searchQuery]);  
@@ -104,16 +119,7 @@ useEffect(() => {
 <div className="mt-6 px-4">
 
    </div>   
-      {visibleCount < shuffledProducts.length && (
-  <div className="flex justify-center mt-6">
-    <button
-      onClick={loadMore}
-      className="px-6 py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-md active:scale-95 transition"
-    >
-      илүү их үзэх
-    </button>
-  </div>
-)}
+  
     </div>
   );
 };
