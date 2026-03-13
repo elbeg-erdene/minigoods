@@ -127,7 +127,7 @@ const fetchOrders = async (phone: string) => {
     const res = await fetch(`${API_URL}?type=orders&phone=${phone}`);
     const data = await res.json();
 
-    setOrders(data);
+    setOrders(data.reverse());
 
     localStorage.setItem(cacheKey, JSON.stringify(data));
 
