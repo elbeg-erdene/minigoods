@@ -1,3 +1,9 @@
+<button onClick={onBack}>
+  <span className="material-symbols-outlined">
+    arrow_back
+  </span>
+</button>
+
 
 import React, { useState, useRef, useEffect } from 'react';
 import { CartItem } from '../types';
@@ -134,6 +140,8 @@ const CartItemRow: React.FC<CartItemComponentProps> = ({ item, onUpdateQuantity,
 
 interface CartScreenProps {
   cart: CartItem[];
+  onBack: ()=> void;
+  
   onUpdateQuantity: (id: string, delta: number) => void;
   onToggleSelection: (id: string) => void;
   onToggleAll: (selected: boolean) => void;
