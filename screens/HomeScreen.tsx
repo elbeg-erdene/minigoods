@@ -95,7 +95,7 @@ useEffect(() => {
         <div className="flex items-center gap-2 bg-gray-100 dark:bg-zinc-800 rounded-full px-4 h-11 border border-transparent focus-within:border-primary/50 shadow-inner">
           <span className="material-symbols-outlined text-gray-400 text-[20px]">search</span>
           <input className="bg-transparent border-none focus:ring-0 text-sm w-full font-medium" placeholder="хайх..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-          <span className="material-symbols-outlined text-primary text-[20px]">photo_camera</span>
+         
         </div>
       </header>
 
