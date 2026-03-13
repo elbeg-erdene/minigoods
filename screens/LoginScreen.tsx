@@ -4,7 +4,7 @@ interface LoginScreenProps {
   onLogin: (phone: string) => Promise <void>;
 }
 
-const API_URL = "https://script.google.com/macros/s/AKfycbybRv2ykeON_Hv7kntLMRnSuZwMWe8YHf61gLtQF2IYqEgG-G0IS77lebNCB1TLtreH/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycby5e0706fCGSKVYm6GF4RKkFK5BqR3fnV6s9hzy9d8L3WzZT6Vc6zNUTRpyrnmvsf9h/exec";
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   const [phone, setPhone] = useState('');
