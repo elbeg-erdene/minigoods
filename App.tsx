@@ -13,7 +13,7 @@ import SubCategoryProductsScreen from './screens/SubCategoryProductsScreen';
 import CategoryProductsScreen from './screens/CategoryProductsScreen';
 import BottomNav from './components/BottomNav';
 
-const API_URL = 'https://script.google.com/macros/s/AKfycby5e0706fCGSKVYm6GF4RKkFK5BqR3fnV6s9hzy9d8L3WzZT6Vc6zNUTRpyrnmvsf9h/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwAsIT6BAWFETAFKvNaFTTE_iO1yjd-Daq_9scUY5cs3bZHt86ofNGNWO1casb1oe1f/exec';
 
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>(Screen.LOGIN);
