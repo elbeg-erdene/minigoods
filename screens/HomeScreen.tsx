@@ -39,13 +39,13 @@ const ProductCard: React.FC<{ product: Product; onAddToCart: (p: Product) => voi
 };
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ products, categories, onAddToCart, onProductClick, onCategoryClick }) => {
-  const [activeCategory, setActiveCategory] = useState(categories[0]?.name || '');
+  const [activeCategory, setActiveCategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 const [visibleCount, setVisibleCount] = useState(12);
   const filteredProducts = useMemo(() => {
     return products.filter(p => {
       const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = activeCategory === 'Шинэ бараа' || activeCategory === '' || p.category === activeCategory;
+      const matchesCategory = activeCategory === '' || p.category === activeCategory;
       return matchesSearch && matchesCategory;
     });
   }, [searchQuery, products, activeCategory]);
