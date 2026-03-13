@@ -4,7 +4,7 @@ interface LoginScreenProps {
   onLogin: (phone: string) => Promise <void>;
 }
 
-const API_URL = "https://script.google.com/macros/s/AKfycby5e0706fCGSKVYm6GF4RKkFK5BqR3fnV6s9hzy9d8L3WzZT6Vc6zNUTRpyrnmvsf9h/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwAsIT6BAWFETAFKvNaFTTE_iO1yjd-Daq_9scUY5cs3bZHt86ofNGNWO1casb1oe1f/exec";
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   const [phone, setPhone] = useState('');
@@ -20,29 +20,20 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
       return;
     }
 
-    try {
       setLoading(true);
 
       const formData = new URLSearchParams();
       formData.append("action", "login");
       formData.append("phone", cleanPhone);
-const response = 
-      await fetch(API_URL, {
+
+     fetch(API_URL, {
         method: "POST",
         body: formData
-      });
-      if(!response.ok) { throw new Error("Network response not ok");}
-const result = await response.json();
-      if(result.status !=="ok") {throw new Error("Login failed");}
+      }).catch(console.error);
+     
     await onLogin(cleanPhone);
 
-    } catch (error) {
-      console.error(error);
-      alert("Сервертэй холбогдож чадсангүй.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    } 
 
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col items-center justify-center px-8 relative overflow-hidden">
