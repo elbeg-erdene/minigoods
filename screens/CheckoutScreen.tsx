@@ -20,6 +20,7 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
 
   const [paymentMethod, setPaymentMethod] = useState<'delivery' | 'bank'>('delivery');
   const [address, setAddress] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +29,7 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
       alert("Хүргэлтийн хаягаа оруулна уу.");
       return;
     }
-
+setIsSubmitting(true);
     onConfirm({
       paymentMethod:
         paymentMethod === 'delivery'
@@ -124,12 +125,13 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
             </p>
           </div>
 
-          <button
-            type="submit"
-            className="bg-primary text-white font-bold px-8 py-4 rounded-2xl shadow-xl shadow-primary/30 active:scale-95 transition-all"
-          >
-            Батлах
-          </button>
+        <button
+  type="submit"
+  disabled={isSubmitting}
+  className="bg-primary text-white font-bold px-8 py-4 rounded-2xl shadow-xl shadow-primary/30 active:scale-95 transition-all disabled:opacity-70"
+>
+  {isSubmitting ? "⏳Захиалга хийгдэж байна..." : "Батлах"}
+</button>
         </div>
 
       </form>
