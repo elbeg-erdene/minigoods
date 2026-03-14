@@ -42,11 +42,11 @@ useEffect(() => {
       setCurrentUser(parsedUser);
       setCurrentScreen(Screen.HOME);
 
-      await Promise.all([
-        fetchProducts(),
-        fetchCategories(),
-        fetchOrders(parsedUser.phone)
-      ]);
+     
+        fetchProducts();
+        fetchCategories();
+        fetchOrders(parsedUser.phone);
+     
 
     } else {
 
@@ -103,7 +103,7 @@ const fetchCategories = async () => {
       setCategories(JSON.parse(cached));
     }
 
-    const res = await fetch(API_URL + "?type=categories");
+    const res = await fetch(API_URL + "?type=categories&t=" + Date.now());
     const data = await res.json();
 
     setCategories(data);
@@ -134,7 +134,7 @@ const fetchOrders = async (phone: string) => {
     const res = await fetch(`${API_URL}?type=orders&phone=${phone}`);
     const data = await res.json();
     
-const reversed = data.reverse();
+const reversed = [...data].reverse();
     setOrders(reversed);
     
     localStorage.setItem(cacheKey, JSON.stringify(reversed));
@@ -147,19 +147,17 @@ const reversed = data.reverse();
 
 };
   
-  const fetchProducts = async () => {
+const fetchProducts = async () => {
 
   try {
 
     const cached = localStorage.getItem("products");
 
-    // ⚡ эхлээд cache харуулна
     if (cached) {
       setProducts(JSON.parse(cached));
     }
 
-    // background update
-    const response = await fetch(API_URL);
+    const response = await fetch(API_URL + "?t=" + Date.now());
     const data = await response.json();
 
     if (Array.isArray(data)) {
@@ -168,8 +166,8 @@ const reversed = data.reverse();
 
       setProducts(activeProducts);
 
-      // cache update
       localStorage.setItem("products", JSON.stringify(activeProducts));
+
     }
 
   } catch (error) {
@@ -178,8 +176,7 @@ const reversed = data.reverse();
 
   }
 
-};
- 
+}; 
   const showToast = (message: string) => {
     setToast({ message, show: true });
     setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
@@ -348,10 +345,12 @@ if (result.status === "ok") {
     onLogout={() => {
 
   // 🔥 LocalStorage цэвэрлэнэ
+     
   localStorage.removeItem("minigoods_user");
 
   if (currentUser) {
     localStorage.removeItem(`cart_${currentUser.phone}`);
+    localStorage.removeItem(`orders_${currentUser.phone}`);
   }
 
   setCurrentUser(null);
