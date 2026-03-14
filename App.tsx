@@ -153,22 +153,27 @@ const fetchProducts = async () => {
 
     const cached = localStorage.getItem("products");
 
+    // ⚡ эхлээд cache харуулна (instant load)
     if (cached) {
       setProducts(JSON.parse(cached));
     }
 
+    // ⚡ background sync
     const response = await fetch(API_URL + "?t=" + Date.now());
     const data = await response.json();
 
-    if (Array.isArray(data)) {
+    if (!Array.isArray(data)) return;
 
-      const activeProducts = data.filter((p: any) => p.active === true);
+    const activeProducts = data.filter((p: any) => p.active === true);
 
-      setProducts(activeProducts);
+    // ⚡ state update
+    setProducts(activeProducts);
 
-      localStorage.setItem("products", JSON.stringify(activeProducts));
-
-    }
+    // ⚡ cache overwrite
+    localStorage.setItem(
+      "products",
+      JSON.stringify(activeProducts)
+    );
 
   } catch (error) {
 
@@ -176,7 +181,7 @@ const fetchProducts = async () => {
 
   }
 
-}; 
+};
   const showToast = (message: string) => {
     setToast({ message, show: true });
     setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
