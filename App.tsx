@@ -72,6 +72,13 @@ useEffect(() => {
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
+const savedOrders = localStorage.getItem(`orders_${currentUser.phone}`);
+
+if (savedOrders) {
+  setOrders(JSON.parse(savedOrders));
+}
+
+    
   }
 }, [currentUser]);
 
@@ -126,10 +133,11 @@ const fetchOrders = async (phone: string) => {
 
     const res = await fetch(`${API_URL}?type=orders&phone=${phone}`);
     const data = await res.json();
-
-    setOrders(data.reverse());
-
-    localStorage.setItem(cacheKey, JSON.stringify(data));
+    
+const reversed = data.reverse();
+    setOrders(reversed);
+    
+    localStorage.setItem(cacheKey, JSON.stringify(reversed));
 
   } catch (err) {
 
@@ -287,13 +295,37 @@ case Screen.CHECKOUT:
 
           const result = await res.json();
 
-          if (result.status === "ok") {
+if (result.status === "ok") {
 
-            setCart([]);
-            setCurrentScreen(Screen.HOME);
-            showToast("Захиалга баталгаажлаа!");
+  const newOrders = selItems.map(item => ({
+    phone: currentUser!.phone,
+    paymentMethod: data.paymentMethod,
+    address: data.address,
+    product: item.name,
+    quantity: item.quantity,
+    date: new Date().toISOString(),
+    status: "pending"
+  }));
 
-          } else {
+  setOrders(prev => {
+
+    const updated = [...newOrders, ...prev];
+
+    localStorage.setItem(
+      `orders_${currentUser!.phone}`,
+      JSON.stringify(updated)
+    );
+
+    return updated;
+  });
+
+  setCart([]);
+  setCurrentScreen(Screen.HOME);
+  showToast("Захиалга баталгаажлаа!");
+
+}
+          
+          else {
             showToast("Sheet рүү илгээхэд алдаа гарлаа");
           }
 
