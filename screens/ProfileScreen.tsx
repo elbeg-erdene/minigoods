@@ -75,7 +75,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({
             {userOrders.map((order, index) => (
               <div
                 key={index}
-                className="bg-white dark:bg-[#2a1a15] rounded-2xl p-4 shadow border border-gray-100 dark:border-white/5"
+                className="bg-white dark:bg-[#2a1a15] rounded-2xl p-4 shadow border border-green-500/30 dark:border-primary/20"
               >
 
                 <p className="text-xs text-gray-500">
